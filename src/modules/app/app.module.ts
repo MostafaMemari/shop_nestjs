@@ -5,6 +5,7 @@ import { envValidationSchema } from 'src/common/validation/env.validation';
 import { typeOrmConfigAsync } from 'src/config/typeorm.config';
 import { ColorsModule } from '../colors/colors.module';
 import { APP_PIPE } from '@nestjs/core';
+import { CategoriesModule } from '../categories/categories.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { APP_PIPE } from '@nestjs/core';
     }),
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
     ColorsModule,
+    CategoriesModule,
   ],
   controllers: [],
   providers: [{ provide: APP_PIPE, useValue: new ValidationPipe({ whitelist: true }) }],
