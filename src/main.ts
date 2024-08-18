@@ -12,6 +12,8 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api/v1');
 
+  // app.useGlobalPipes(new ValidationPipe());
+
   swaggerConfigInit(app);
 
   await app.listen(PORT, () => {

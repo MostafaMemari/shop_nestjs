@@ -4,6 +4,6 @@ import { Column, Entity } from 'typeorm';
 
 @Entity(EntityName.Colors)
 export class Color extends BaseEntity {
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', unique: true, nullable: false, length: 50 })
   name: string;
 }

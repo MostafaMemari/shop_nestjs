@@ -1,26 +1,45 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateColorDto } from './dto/create-color.dto';
 import { UpdateColorDto } from './dto/update-color.dto';
+import { ColorsMessage } from './messages/colors.messages';
+import { ColorsRepository } from './colors.repository';
 
 @Injectable()
 export class ColorsService {
-  create(createColorDto: CreateColorDto) {
-    return 'This action adds a new color';
+  constructor(private readonly colorRepository: ColorsRepository) {}
+
+  async create(createColorDto: CreateColorDto) {
+    await this.colorRepository.createColor(createColorDto);
+
+    return {
+      message: ColorsMessage.CreatedColorSuccess,
+    };
   }
 
-  findAll() {
-    return `This action returns all colors`;
+  async findAll() {
+    return await this.colorRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} color`;
+  async findOneById(id: number) {
+    const color = await this.colorRepository.findOneBy({ id });
+    if (!color) throw new ConflictException(ColorsMessage.NotFoundColor);
+    return color;
   }
 
-  update(id: number, updateColorDto: UpdateColorDto) {
-    return `This action updates a #${id} color`;
+  async update(id: number, updateColorDto: UpdateColorDto) {
+    await this.colorRepository.updateColor(id, updateColorDto);
+
+    return {
+      message: ColorsMessage.UpdatedColorSuccess,
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} color`;
+  async remove(id: number) {
+    const color = await this.colorRepository.delete({ id });
+    if (color.affected === 0) throw new NotFoundException(ColorsMessage.NotFoundColor);
+
+    return {
+      message: ColorsMessage.RemoveColorSuccess,
+    };
   }
 }
