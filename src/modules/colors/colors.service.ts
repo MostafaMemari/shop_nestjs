@@ -1,8 +1,8 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateColorDto } from './dto/create-color.dto';
 import { UpdateColorDto } from './dto/update-color.dto';
-import { ColorsMessage } from './messages/colors.messages';
 import { ColorsRepository } from './colors.repository';
+import { ColorsMessage } from 'src/common/enums/messages.enum';
 
 @Injectable()
 export class ColorsService {

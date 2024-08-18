@@ -2,8 +2,8 @@ import { Injectable, ConflictException, InternalServerErrorException } from '@ne
 import { DataSource, Repository } from 'typeorm';
 import { Color } from './entities/color.entity';
 import { CreateColorDto } from './dto/create-color.dto';
-import { ColorsMessage } from './messages/colors.messages';
 import { UpdateColorDto } from './dto/update-color.dto';
+import { ColorsMessage } from 'src/common/enums/messages.enum';
 
 @Injectable()
 export class ColorsRepository extends Repository<Color> {

@@ -1,8 +1,8 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { CategoriesMessage } from './messages/categories.messages';
 import { CategoriesRepository } from './categories.repository';
+import { CategoriesMessage } from 'src/common/enums/messages.enum';
 
 @Injectable()
 export class CategoriesService {

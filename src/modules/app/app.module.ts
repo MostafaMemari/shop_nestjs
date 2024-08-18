@@ -6,6 +6,8 @@ import { typeOrmConfigAsync } from 'src/config/typeorm.config';
 import { ColorsModule } from '../colors/colors.module';
 import { APP_PIPE } from '@nestjs/core';
 import { CategoriesModule } from '../categories/categories.module';
+import { AuthModule } from '../auth/auth.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { CategoriesModule } from '../categories/categories.module';
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
     ColorsModule,
     CategoriesModule,
+    AuthModule,
+    UsersModule,
   ],
   controllers: [],
   providers: [{ provide: APP_PIPE, useValue: new ValidationPipe({ whitelist: true }) }],

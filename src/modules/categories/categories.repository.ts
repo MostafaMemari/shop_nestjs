@@ -2,8 +2,8 @@ import { Injectable, ConflictException, InternalServerErrorException } from '@ne
 import { DataSource, Repository } from 'typeorm';
 import { Category } from './entities/categories.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { CategoriesMessage } from './messages/categories.messages';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CategoriesMessage } from 'src/common/enums/messages.enum';
 
 @Injectable()
 export class CategoriesRepository extends Repository<Category> {
