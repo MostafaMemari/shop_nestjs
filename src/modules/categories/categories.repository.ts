@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, ConflictException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Category } from './entities/categories.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -33,5 +33,11 @@ export class CategoriesRepository extends Repository<Category> {
         throw new InternalServerErrorException();
       }
     }
+  }
+
+  async findById(id: number) {
+    const category = await this.findOneBy({ id });
+    if (!category) throw new NotFoundException(CategoriesMessage.NotFoundCategory);
+    return category;
   }
 }

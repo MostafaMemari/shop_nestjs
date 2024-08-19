@@ -46,3 +46,12 @@ export enum SellersMessage {
   CannotRemoveSeller = 'You are not allowed to remove this seller',
   RemoveSellerSuccess = 'Seller removed successfully',
 }
+export enum ProductsMessage {
+  CreatedProductSuccess = 'Product created successfully',
+  AlreadyExistsProduct = 'A product with this name already exists',
+  NotFoundProduct = 'Product not found',
+  UpdatedProductSuccess = 'Product updated successfully',
+  CannotUpdateProduct = 'You are not allowed to update this product',
+  CannotRemoveProduct = 'You are not allowed to remove this product',
+  RemoveProductSuccess = 'Product removed successfully',
+}

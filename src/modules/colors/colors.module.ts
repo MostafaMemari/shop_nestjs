@@ -9,5 +9,6 @@ import { ColorsRepository } from './colors.repository';
   imports: [TypeOrmModule.forFeature([Color])],
   controllers: [ColorsController],
   providers: [ColorsService, ColorsRepository],
+  exports: [ColorsService, ColorsRepository],
 })
 export class ColorsModule {}

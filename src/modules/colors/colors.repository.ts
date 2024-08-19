@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, ConflictException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Color } from './entities/color.entity';
 import { CreateColorDto } from './dto/create-color.dto';
@@ -33,5 +33,11 @@ export class ColorsRepository extends Repository<Color> {
         throw new InternalServerErrorException();
       }
     }
+  }
+
+  async findById(id: number) {
+    const color = await this.findOneBy({ id });
+    if (!color) throw new NotFoundException(ColorsMessage.NotFoundColor);
+    return color;
   }
 }
