@@ -2,9 +2,8 @@ import { BaseEntity } from 'src/common/abstracts/base.entity';
 import { EntityName } from 'src/common/enums/entity.enum';
 import { Category } from 'src/modules/categories/entities/categories.entity';
 import { Color } from 'src/modules/colors/entities/color.entity';
-import { Store } from 'src/modules/stores/entities/store.entity';
+import { Seller } from 'src/modules/sellers/entities/seller.entity';
 import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
-import { User } from 'src/modules/users/entities/user.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 
 @Entity(EntityName.Products)
@@ -18,8 +17,8 @@ export class Product extends BaseEntity {
   @Column({ type: 'integer' })
   quantity: number;
 
-  @ManyToOne(() => Store, (store) => store.products)
-  store: Store;
+  @ManyToOne(() => Seller, (seller) => seller.products)
+  seller: Seller;
 
   @OneToMany(() => Transaction, (transaction) => transaction.product)
   transactions: Transaction[];

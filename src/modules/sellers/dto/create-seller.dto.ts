@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString, Length } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsPhoneNumber, IsString, Length } from 'class-validator';
 
 export class CreateSellerDto {
   @IsString()
@@ -11,12 +11,12 @@ export class CreateSellerDto {
   name: string;
 
   @IsEmail({ host_whitelist: ['gmail.com', 'yahoo.com'] })
-  @IsNotEmpty()
+  @IsOptional()
   @ApiPropertyOptional({ type: 'string', example: '' })
   email: string;
 
   @IsPhoneNumber('IR')
-  @IsNotEmpty()
+  @IsOptional()
   @ApiPropertyOptional({ type: 'string', example: '' })
   phone: string;
 }

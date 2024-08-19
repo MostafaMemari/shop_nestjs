@@ -41,11 +41,12 @@ export class RegisterDto {
     maxLength: 30,
     minLength: 8,
     required: true,
+    example: '',
   })
   password: string;
 
   @IsNotEmpty()
-  @ApiProperty({ required: true, type: 'string' })
+  @ApiProperty({ required: true, type: 'string', example: '' })
   @ConfirmPassword('password')
   confirm_password: string;
 }

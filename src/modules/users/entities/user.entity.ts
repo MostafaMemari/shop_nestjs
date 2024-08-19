@@ -1,7 +1,7 @@
 import { BaseEntity } from 'src/common/abstracts/base.entity';
 import { EntityName } from 'src/common/enums/entity.enum';
 import { Roles } from 'src/common/enums/role.enum';
-import { Store } from 'src/modules/stores/entities/store.entity';
+import { Seller } from 'src/modules/sellers/entities/seller.entity';
 import { Column, CreateDateColumn, Entity, OneToMany } from 'typeorm';
 
 @Entity(EntityName.Users)
@@ -21,6 +21,6 @@ export class User extends BaseEntity {
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 
-  @OneToMany(() => Store, (store) => store.owner)
-  stores: Store[];
+  @OneToMany(() => Seller, (seller) => seller.user)
+  stores: Seller[];
 }

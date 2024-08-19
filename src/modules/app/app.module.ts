@@ -10,7 +10,6 @@ import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
 import { ProductsModule } from '../products/products.module';
 import { SellersModule } from '../sellers/sellers.module';
-import { StoresModule } from '../stores/stores.module';
 
 @Module({
   imports: [
@@ -26,7 +25,6 @@ import { StoresModule } from '../stores/stores.module';
     UsersModule,
     ProductsModule,
     SellersModule,
-    StoresModule,
   ],
   controllers: [],
   providers: [{ provide: APP_PIPE, useValue: new ValidationPipe({ whitelist: true }) }],

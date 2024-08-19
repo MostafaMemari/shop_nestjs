@@ -1,7 +1,8 @@
 import { BaseEntity } from 'src/common/abstracts/base.entity';
 import { EntityName } from 'src/common/enums/entity.enum';
-import { Store } from 'src/modules/stores/entities/store.entity';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Product } from 'src/modules/products/entities/product.entity';
+import { User } from 'src/modules/users/entities/user.entity';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity(EntityName.Sellers)
 export class Seller extends BaseEntity {
@@ -14,7 +15,9 @@ export class Seller extends BaseEntity {
   @Column({ type: 'varchar', nullable: true })
   phone: string;
 
-  @OneToOne(() => Store, (store) => store.seller, { cascade: true })
-  @JoinColumn()
-  store: Store;
+  @ManyToOne(() => User, (user) => user.stores, { nullable: false })
+  user: User;
+
+  @OneToMany(() => Product, (product) => product.seller)
+  products: Product[];
 }
