@@ -2,12 +2,16 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { SellersService } from './sellers.service';
 import { CreateSellerDto } from './dto/create-seller.dto';
 import { UpdateSellerDto } from './dto/update-seller.dto';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { SwaggerConsumes } from 'src/common/enums/swagger-consumes.enum';
 
 @Controller('sellers')
+@ApiTags('Seller')
 export class SellersController {
   constructor(private readonly sellersService: SellersService) {}
 
   @Post()
+  @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
   create(@Body() createSellerDto: CreateSellerDto) {
     return this.sellersService.create(createSellerDto);
   }

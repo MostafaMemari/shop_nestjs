@@ -9,6 +9,7 @@ import { CategoriesModule } from '../categories/categories.module';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
 import { ProductsModule } from '../products/products.module';
+import { SellersModule } from '../sellers/sellers.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ProductsModule } from '../products/products.module';
     AuthModule,
     UsersModule,
     ProductsModule,
+    SellersModule,
   ],
   controllers: [],
   providers: [{ provide: APP_PIPE, useValue: new ValidationPipe({ whitelist: true }) }],

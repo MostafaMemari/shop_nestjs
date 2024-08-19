@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSellerDto } from './dto/create-seller.dto';
 import { UpdateSellerDto } from './dto/update-seller.dto';
+import { SellersRepository } from './seller.repository';
 
 @Injectable()
 export class SellersService {
+  constructor(private sellersRepository: SellersRepository) {}
   create(createSellerDto: CreateSellerDto) {
-    return 'This action adds a new seller';
+    return this.sellersRepository.createSeller(createSellerDto);
   }
 
   findAll() {
