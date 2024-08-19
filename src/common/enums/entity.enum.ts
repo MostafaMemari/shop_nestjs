@@ -5,4 +5,5 @@ export enum EntityName {
   Products = 'products',
   Stores = 'stores',
   Sellers = 'sellers',
+  Transaction = 'transaction',
 }
