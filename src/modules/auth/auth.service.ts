@@ -17,7 +17,7 @@ export class AuthService {
   async login(loginDto: LoginDto): Promise<{ accessToken: string }> {
     const user = await this.validateUser(loginDto.identifier, loginDto.password);
     if (!user) throw new UnauthorizedException('Invalid credentials');
-    const payload: JwtPayload = { email: user.email, role: user.role };
+    const payload: JwtPayload = { id: user.id, role: user.role };
     const accessToken = this.jwtService.sign(payload);
     return { accessToken };
   }

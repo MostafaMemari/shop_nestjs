@@ -8,6 +8,7 @@ import { APP_PIPE } from '@nestjs/core';
 import { CategoriesModule } from '../categories/categories.module';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
+import { ProductsModule } from '../products/products.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { UsersModule } from '../users/users.module';
     CategoriesModule,
     AuthModule,
     UsersModule,
+    ProductsModule,
   ],
   controllers: [],
   providers: [{ provide: APP_PIPE, useValue: new ValidationPipe({ whitelist: true }) }],

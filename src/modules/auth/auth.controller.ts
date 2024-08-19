@@ -7,7 +7,7 @@ import { SwaggerConsumes } from 'src/common/enums/swagger-consumes.enum';
 import { RegisterDto } from './dto/register.dto';
 
 @Controller('auth')
-@ApiTags('Authorisition')
+@ApiTags('Authorisation')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
