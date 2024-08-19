@@ -1,11 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
+import { StoreRepository } from './stores.repository';
+import { User } from '../users/entities/user.entity';
+import { StoresMessage } from 'src/common/enums/messages.enum';
 
 @Injectable()
 export class StoresService {
-  create(createStoreDto: CreateStoreDto) {
-    return 'This action adds a new store';
+  constructor(private storeRepository: StoreRepository) {}
+
+  async create(createStoreDto: CreateStoreDto, user: User) {
+    await this.storeRepository.createStore(createStoreDto, user);
+
+    return {
+      message: StoresMessage.CreatedStoreSuccess,
+    };
   }
 
   findAll() {

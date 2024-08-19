@@ -27,3 +27,13 @@ export enum CategoriesMessage {
   CannotRemoveCategory = 'You are not allowed to remove this category',
   RemoveCategorySuccess = 'Category removed successfully',
 }
+
+export enum StoresMessage {
+  CreatedStoreSuccess = 'Store created successfully',
+  AlreadyExistsStore = 'A store with this name already exists',
+  NotFoundStore = 'Store not found',
+  UpdatedStoreSuccess = 'Store updated successfully',
+  CannotUpdateStore = 'You are not allowed to update this store',
+  CannotRemoveStore = 'You are not allowed to remove this store',
+  RemoveStoreSuccess = 'Store removed successfully',
+}

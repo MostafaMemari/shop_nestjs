@@ -3,14 +3,14 @@ import { EntityName } from 'src/common/enums/entity.enum';
 import { Product } from 'src/modules/products/entities/product.entity';
 import { Seller } from 'src/modules/sellers/entities/seller.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 
 @Entity(EntityName.Stores)
 export class Store extends BaseEntity {
   @Column({ type: 'varchar' })
   name: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: false })
   address: string;
 
   @CreateDateColumn({ type: 'timestamp' })
@@ -19,7 +19,7 @@ export class Store extends BaseEntity {
   @OneToMany(() => Product, (product) => product.store)
   products: Product[];
 
-  @ManyToOne(() => User, (user) => user.stores)
+  @ManyToOne(() => User, (user) => user.stores, { nullable: false })
   owner: User;
 
   @OneToOne(() => Seller, (seller) => seller.store)

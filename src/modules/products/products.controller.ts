@@ -9,7 +9,7 @@ import { GetUser } from '../auth/decorators/get-user.decorator';
 import { User } from '../users/entities/user.entity';
 
 @Controller('products')
-@ApiTags('Products')
+@ApiTags('Product')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
@@ -22,7 +22,6 @@ export class ProductsController {
   @Get()
   @ApiBearerAuth('Authorization')
   findAll(@GetUser() user: User) {
-    console.log(user);
     return this.productsService.findAll();
   }
 
