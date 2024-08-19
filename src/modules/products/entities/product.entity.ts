@@ -18,9 +18,6 @@ export class Product extends BaseEntity {
   @Column({ type: 'integer' })
   quantity: number;
 
-  @ManyToOne(() => User, (user) => user.products)
-  user: User;
-
   @ManyToOne(() => Store, (store) => store.products)
   store: Store;
 

@@ -1,7 +1,9 @@
 import { BaseEntity } from 'src/common/abstracts/base.entity';
 import { EntityName } from 'src/common/enums/entity.enum';
 import { Product } from 'src/modules/products/entities/product.entity';
-import { Column, CreateDateColumn, Entity, OneToMany } from 'typeorm';
+import { Seller } from 'src/modules/sellers/entities/seller.entity';
+import { User } from 'src/modules/users/entities/user.entity';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 
 @Entity(EntityName.Stores)
 export class Store extends BaseEntity {
@@ -16,4 +18,10 @@ export class Store extends BaseEntity {
 
   @OneToMany(() => Product, (product) => product.store)
   products: Product[];
+
+  @ManyToOne(() => User, (user) => user.stores)
+  owner: User;
+
+  @OneToOne(() => Seller, (seller) => seller.store)
+  seller: Seller;
 }
