@@ -14,14 +14,6 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(identifier: string, password: string): Promise<User> {
-    const user = await this.usersService.findUserByEmailAndUsername(identifier);
-    if (user && (await HashUtil.compareHash(password, user.password))) {
-      return user;
-    }
-    return null;
-  }
-
   async login(loginDto: LoginDto): Promise<{ accessToken: string }> {
     const user = await this.validateUser(loginDto.identifier, loginDto.password);
     if (!user) throw new UnauthorizedException('Invalid credentials');
@@ -32,5 +24,13 @@ export class AuthService {
 
   async register(registerDto: RegisterDto): Promise<User> {
     return this.usersService.create(registerDto);
+  }
+
+  async validateUser(identifier: string, password: string): Promise<User> {
+    const user = await this.usersService.findUserByEmailOrUsername(identifier);
+    if (user && (await HashUtil.compareHash(password, user.password))) {
+      return user;
+    }
+    return null;
   }
 }

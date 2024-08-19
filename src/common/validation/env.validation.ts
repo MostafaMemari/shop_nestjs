@@ -12,4 +12,7 @@ export const envValidationSchema = Joi.object({
   DB_USERNAME: Joi.string().default('postgres'),
   DB_PASSWORD: Joi.string().default('').allow(''),
   DB_NAME: Joi.string().default('shop'),
+
+  JWT_SECRET: Joi.string().required(),
+  JWT_EXPIRES_IN: Joi.string().required(),
 });

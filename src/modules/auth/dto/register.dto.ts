@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsString, Length, Matches, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 import { ConfirmPassword } from 'src/common/decorators/password.decorators';
 
 export class RegisterDto {
@@ -8,8 +8,6 @@ export class RegisterDto {
   @Transform(({ value }) => value?.trim())
   @IsNotEmpty()
   @Matches(/^[a-zA-Z0-9_]+$/, { message: 'Invalid username' })
-  // @MaxLength(40)
-  // @MinLength(2)
   @Length(6, 30)
   @ApiProperty({
     type: 'string',
