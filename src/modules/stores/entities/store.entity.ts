@@ -1,6 +1,7 @@
 import { BaseEntity } from 'src/common/abstracts/base.entity';
 import { EntityName } from 'src/common/enums/entity.enum';
-import { Column, CreateDateColumn, Entity } from 'typeorm';
+import { Product } from 'src/modules/products/entities/product.entity';
+import { Column, CreateDateColumn, Entity, OneToMany } from 'typeorm';
 
 @Entity(EntityName.Stores)
 export class Store extends BaseEntity {
@@ -12,4 +13,7 @@ export class Store extends BaseEntity {
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
+
+  @OneToMany(() => Product, (product) => product.store)
+  products: Product[];
 }
