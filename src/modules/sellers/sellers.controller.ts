@@ -7,28 +7,28 @@ import { SwaggerConsumes } from 'src/common/enums/swagger-consumes.enum';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthDecorator } from 'src/common/decorators/auth.decorator';
 
 @Controller('sellers')
 @ApiTags('Seller')
+@AuthDecorator()
 export class SellersController {
   constructor(private readonly SellerService: SellerService) {}
 
   @Post('')
   @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
-  @ApiBearerAuth('Authorization')
-  @UseGuards(JwtAuthGuard)
   create(@Body() createSellerDto: CreateSellerDto, @GetUser() user: User) {
     return this.SellerService.create(createSellerDto, user);
   }
 
   @Get()
-  findAll() {
-    return this.SellerService.findAll();
+  findAll(@GetUser() user: User) {
+    return this.SellerService.findAll(user);
   }
 
   @Get(':id')
-  findOneById(@Param('id', ParseIntPipe) id: string) {
-    return this.SellerService.findOneById(+id);
+  findOneById(@Param('id', ParseIntPipe) id: string, @GetUser() user: User) {
+    return this.SellerService.findOneById(+id, user);
   }
 
   @Patch(':id')
@@ -37,7 +37,7 @@ export class SellersController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.SellerService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: string, @GetUser() user: User) {
+    return this.SellerService.remove(+id, user);
   }
 }

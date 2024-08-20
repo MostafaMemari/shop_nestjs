@@ -1,26 +1,26 @@
-import { PipeTransform, Injectable, NotFoundException } from '@nestjs/common';
+import { PipeTransform, Injectable, NotFoundException, Scope, Inject } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
 import { formatErrorMessage } from 'src/common/utils/functions';
-import { CategoriesRepository } from 'src/modules/categories/categories.repository';
 import { CategoriesService } from 'src/modules/categories/categories.service';
-import { ColorsRepository } from 'src/modules/colors/colors.repository';
 import { ColorsService } from 'src/modules/colors/colors.service';
-import { SellersRepository } from 'src/modules/sellers/seller.repository';
 import { SellerService } from 'src/modules/sellers/sellers.service';
 import { EntityNotFoundError } from 'typeorm';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class ValidateIdsPipe implements PipeTransform {
   constructor(
     private readonly colorService: ColorsService,
     private readonly categoriesService: CategoriesService,
     private readonly sellerService: SellerService,
+    @Inject(REQUEST) private readonly request: Request,
   ) {}
 
   async transform(value: any) {
     try {
-      await this.colorService.findById(value.colorId);
-      await this.categoriesService.findById(value.categoryId);
-      await this.sellerService.findById(value.sellerId);
+      await this.colorService.findOneById(value.colorId);
+      await this.categoriesService.findOneById(value.categoryId);
+      await this.sellerService.findOneById(value.sellerId, this.request.user);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         throw new NotFoundException(formatErrorMessage(error.message));

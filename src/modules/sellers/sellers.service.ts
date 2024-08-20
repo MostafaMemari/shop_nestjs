@@ -16,19 +16,15 @@ export class SellerService {
     };
   }
 
-  async findById(id: number) {
-    const seller = await this.sellersRepository.findOneBy({ id });
+  async findAll(user: User) {
+    const seller = await this.sellersRepository.findBy({ user });
     if (!seller) throw new NotFoundException(SellersMessage.NotFoundSeller);
     return seller;
   }
 
-  findAll() {
-    return `This action returns all sellers`;
-  }
-
-  findOneById(id: number) {
-    const seller = this.sellersRepository.findOneBy({ id });
-    if (!seller) throw new NotFoundException();
+  async findOneById(id: number, user: User) {
+    const seller = await this.sellersRepository.findOneBy({ id, user });
+    if (!seller) throw new NotFoundException(SellersMessage.NotFoundSeller);
     return seller;
   }
 
@@ -36,7 +32,12 @@ export class SellerService {
     return `This action updates a #${id} seller`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} seller`;
+  async remove(id: number, user: User) {
+    const color = await this.findOneById(id, user);
+    await this.sellersRepository.remove(color);
+
+    return {
+      message: SellersMessage.RemoveSellerSuccess,
+    };
   }
 }

@@ -16,7 +16,7 @@ export class CategoriesService {
     };
   }
 
-  async findById(id: number) {
+  async findOneById(id: number) {
     const category = await this.categoryRepository.findOneBy({ id });
     if (!category) throw new NotFoundException(CategoriesMessage.NotFoundCategory);
     return category;
@@ -24,12 +24,6 @@ export class CategoriesService {
 
   async findAll() {
     return await this.categoryRepository.find();
-  }
-
-  async findOneById(id: number) {
-    const category = await this.categoryRepository.findOneBy({ id });
-    if (!category) throw new ConflictException(CategoriesMessage.NotFoundCategory);
-    return category;
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
