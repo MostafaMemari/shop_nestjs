@@ -9,20 +9,10 @@ import { ProductsMessage } from 'src/common/enums/messages.enum';
 
 @Injectable()
 export class ProductsService {
-  constructor(
-    private readonly productRepository: ProductsRepository,
-    private readonly colorsRepository: ColorsRepository,
-    private readonly categoryRepository: CategoriesRepository,
-    private readonly sellersRepository: SellersRepository,
-  ) {}
+  constructor(private readonly productRepository: ProductsRepository) {}
 
   async create(createProductDto: CreateProductDto) {
-    const { colorId, categoryId, sellerId } = createProductDto;
-    const color = await this.colorsRepository.findById(colorId);
-    const category = await this.categoryRepository.findById(categoryId);
-    const seller = await this.sellersRepository.findById(sellerId);
-
-    await this.productRepository.createProduct(createProductDto, color, category, seller);
+    await this.productRepository.createProduct(createProductDto);
 
     return {
       message: ProductsMessage.CreatedProductSuccess,

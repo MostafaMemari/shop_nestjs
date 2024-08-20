@@ -23,11 +23,11 @@ export class Product extends BaseEntity {
   @OneToMany(() => Transaction, (transaction) => transaction.product)
   transactions: Transaction[];
 
-  @OneToOne(() => Color, (color) => color.product)
+  @ManyToOne(() => Color, (color) => color.products, { nullable: false })
   @JoinColumn()
   color: Color;
 
-  @OneToOne(() => Category, (category) => category.product)
+  @ManyToOne(() => Category, (category) => category.products, { nullable: false })
   @JoinColumn()
   category: Category;
 }

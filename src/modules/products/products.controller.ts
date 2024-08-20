@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UsePipes } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -7,6 +7,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { SwaggerConsumes } from 'src/common/enums/swagger-consumes.enum';
+import { ValidateIdsPipe } from './pipe/validate-ids.pipe';
 
 @Controller('products')
 @ApiTags('Product')
@@ -17,6 +18,7 @@ export class ProductsController {
   @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
   @ApiBearerAuth('Authorization')
   @UseGuards(JwtAuthGuard)
+  @UsePipes(ValidateIdsPipe)
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }
