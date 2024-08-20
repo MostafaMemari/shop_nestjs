@@ -34,10 +34,4 @@ export class ColorsRepository extends Repository<Color> {
       }
     }
   }
-
-  async findById(id: number) {
-    const color = await this.findOneBy({ id });
-    if (!color) throw new NotFoundException(ColorsMessage.NotFoundColor);
-    return color;
-  }
 }

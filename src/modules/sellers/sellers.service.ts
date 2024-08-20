@@ -16,6 +16,12 @@ export class SellerService {
     };
   }
 
+  async findById(id: number) {
+    const seller = await this.sellersRepository.findOneBy({ id });
+    if (!seller) throw new NotFoundException(SellersMessage.NotFoundSeller);
+    return seller;
+  }
+
   findAll() {
     return `This action returns all sellers`;
   }

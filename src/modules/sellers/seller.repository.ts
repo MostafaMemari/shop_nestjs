@@ -20,10 +20,4 @@ export class SellersRepository extends Repository<Seller> {
       throw new InternalServerErrorException();
     }
   }
-
-  async findById(id: number) {
-    const seller = await this.findOneBy({ id });
-    if (!seller) throw new NotFoundException(SellersMessage.NotFoundSeller);
-    return seller;
-  }
 }

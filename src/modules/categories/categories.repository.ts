@@ -34,10 +34,4 @@ export class CategoriesRepository extends Repository<Category> {
       }
     }
   }
-
-  async findById(id: number) {
-    const category = await this.findOneBy({ id });
-    if (!category) throw new NotFoundException(CategoriesMessage.NotFoundCategory);
-    return category;
-  }
 }

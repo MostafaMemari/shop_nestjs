@@ -16,6 +16,12 @@ export class CategoriesService {
     };
   }
 
+  async findById(id: number) {
+    const category = await this.categoryRepository.findOneBy({ id });
+    if (!category) throw new NotFoundException(CategoriesMessage.NotFoundCategory);
+    return category;
+  }
+
   async findAll() {
     return await this.categoryRepository.find();
   }
