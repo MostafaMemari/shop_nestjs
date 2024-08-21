@@ -36,14 +36,12 @@ export class ProductsService {
     if (!product) throw new NotFoundException(ProductsMessage.NotFoundProduct);
     return product;
   }
-  async findOneByIdAndRelationSetting(id: number, user: User) {
-    const product = await this.productRepository.findOneByIdAndRelationSetting(id, user);
-    if (!product) throw new NotFoundException(ProductsMessage.NotFoundProduct);
-    return product;
-  }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(id: number, updateProductDto: UpdateProductDto, user: User) {
+    const product = await this.findOneById(id, user);
+
+    this.productRepository.merge(product, updateProductDto);
+    return await this.productRepository.save(product);
   }
 
   async remove(id: number, user: User) {
@@ -53,5 +51,11 @@ export class ProductsService {
     return {
       message: ProductsMessage.RemoveProductSuccess,
     };
+  }
+
+  async findOneByIdAndRelationSetting(id: number, user: User) {
+    const product = await this.productRepository.findOneByIdAndRelationSetting(id, user);
+    if (!product) throw new NotFoundException(ProductsMessage.NotFoundProduct);
+    return product;
   }
 }
