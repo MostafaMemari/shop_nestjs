@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 import { ProductsMessage } from 'src/common/enums/messages.enum';
 import { User } from '../users/entities/user.entity';
 import { productSettingsDto } from './dto/product-settings.dto';
@@ -24,7 +23,12 @@ export class ProductsService {
 
   async createAndUpdateProductSettings(id: number, productSettingsDto: productSettingsDto, user: User) {
     const product = await this.findOneByIdAndRelationSetting(id, user);
+    const isCreated = !product.product_settings;
     await this.ProductSettingsRepository.createAndUpdateProductSettings(id, product, productSettingsDto);
+
+    return {
+      message: isCreated ? ProductsMessage.CreateProductSettingsSuccess : ProductsMessage.UpdateProductSettingsSuccess,
+    };
   }
 
   async findAll(user: User) {
@@ -41,7 +45,11 @@ export class ProductsService {
     const product = await this.findOneById(id, user);
 
     this.productRepository.merge(product, updateProductDto);
-    return await this.productRepository.save(product);
+    await this.productRepository.save(product);
+
+    return {
+      message: ProductsMessage.UpdatedProductSuccess,
+    };
   }
 
   async remove(id: number, user: User) {

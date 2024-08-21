@@ -1,20 +1,24 @@
-import { BaseEntity } from 'src/common/abstracts/base.entity';
-import { EntityName } from 'src/common/enums/entity.enum';
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany } from 'typeorm';
-import { TransactionType } from '../enums/transaction-type.enum';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
+import { TransactionType } from '../enum/transaction-type.enum';
 import { Product } from 'src/modules/products/entities/product.entity';
 
-@Entity(EntityName.Transaction)
-export class Transaction extends BaseEntity {
+@Entity()
+export class Transaction {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ type: 'decimal' })
+  price: number;
+
+  @Column({ type: 'int' })
+  quantity: number;
+
   @Column({ type: 'enum', enum: TransactionType })
   type: TransactionType;
 
-  @Column({ type: 'integer' })
-  quantity: string;
-
   @CreateDateColumn({ type: 'timestamp' })
-  created_at: Date;
+  createdAt: Date;
 
-  @ManyToOne(() => Product, (product) => product.transactions)
+  @ManyToOne(() => Product, (product) => product.transactions, { onDelete: 'CASCADE' })
   product: Product;
 }

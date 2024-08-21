@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Product } from '../entities/product.entity';
 
-import { CreateProductDto } from '../dto/create-product.dto';
+import { CreateProductDto } from '../dto/product.dto';
 import { User } from '../../users/entities/user.entity';
 import { EntityName } from 'src/common/enums/entity.enum';
 

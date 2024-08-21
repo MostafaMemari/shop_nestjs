@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { PartialType } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsInt, IsNotEmpty, IsOptional, IsPositive, IsString, Length, Max, Min } from 'class-validator';
 
@@ -80,3 +81,5 @@ export class CreateProductDto {
   @ApiPropertyOptional({ type: 'integer', example: 3 })
   categoryId?: number;
 }
+
+export class UpdateProductDto extends PartialType(CreateProductDto) {}

@@ -26,7 +26,7 @@ export class ProductSettings extends BaseEntity {
   @CreateDateColumn({ type: 'timestamp' })
   updated_at: Date;
 
-  @OneToOne(() => Product, (product) => product.product_settings)
+  @OneToOne(() => Product, (product) => product.product_settings, { onDelete: 'CASCADE' })
   @JoinColumn()
   product: Product;
 }

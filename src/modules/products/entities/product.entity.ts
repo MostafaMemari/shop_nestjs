@@ -1,11 +1,11 @@
 import { BaseEntity } from 'src/common/abstracts/base.entity';
 import { EntityName } from 'src/common/enums/entity.enum';
 import { Seller } from 'src/modules/sellers/entities/seller.entity';
-import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
 import { Color } from 'src/modules/colors/entities/color.entity';
 import { Column, Entity, ManyToOne, OneToMany, JoinColumn, OneToOne } from 'typeorm';
 import { Category } from 'src/modules/categories/entities/categories.entity';
 import { ProductSettings } from './product-settings.entity';
+import { Transaction } from 'src/modules/transactions/entities/transaction.entity';
 
 @Entity(EntityName.Products)
 export class Product extends BaseEntity {

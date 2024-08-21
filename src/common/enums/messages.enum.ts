@@ -48,10 +48,18 @@ export enum SellersMessage {
 }
 export enum ProductsMessage {
   CreatedProductSuccess = 'Product created successfully',
+  CreateProductSettingsSuccess = 'Product settings created successfully',
+  SaleExceedsStock = 'Sale quantity exceeds available stock',
+  UpdateProductSettingsSuccess = 'Product settings updated successfully',
   AlreadyExistsProduct = 'A product with this name already exists',
   NotFoundProduct = 'Product not found',
   UpdatedProductSuccess = 'Product updated successfully',
   CannotUpdateProduct = 'You are not allowed to update this product',
   CannotRemoveProduct = 'You are not allowed to remove this product',
   RemoveProductSuccess = 'Product removed successfully',
+}
+export enum TransactionsMessage {
+  CreatedTransactionSuccess = 'Transaction created successfully',
+  UpdatedTransactionSuccess = 'Transaction updated successfully',
+  RemoveTransactionSuccess = 'Transaction removed successfully',
 }

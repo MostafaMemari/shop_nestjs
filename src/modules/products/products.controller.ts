@@ -1,15 +1,14 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, ParseIntPipe, Put } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 
-import { GetUser } from '../auth/decorators/get-user.decorator';
-import { User } from '../users/entities/user.entity';
 import { SwaggerConsumes } from 'src/common/enums/swagger-consumes.enum';
 import { ValidateIdsPipe } from './pipe/validate-ids.pipe';
 import { AuthDecorator } from 'src/common/decorators/auth.decorator';
 import { productSettingsDto } from './dto/product-settings.dto';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { GetUser } from '../auth/decorators/get-user.decorator';
+import { User } from '../users/entities/user.entity';
 
 @Controller('products')
 @ApiTags('Product')

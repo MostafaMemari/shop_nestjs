@@ -6,7 +6,7 @@ export class LoginDto {
   @ApiProperty({
     type: 'string',
     required: true,
-    example: '',
+    example: 'MostafaMemari',
   })
   identifier: string;
 
@@ -14,7 +14,7 @@ export class LoginDto {
   @ApiProperty({
     type: 'string',
     required: true,
-    example: '',
+    example: 'M@o6945500',
   })
   password: string;
 }
