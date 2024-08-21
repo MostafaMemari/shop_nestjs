@@ -6,4 +6,5 @@ export enum EntityName {
   Stores = 'stores',
   Sellers = 'sellers',
   Transaction = 'transaction',
+  ProductSettings = 'product_settings',
 }

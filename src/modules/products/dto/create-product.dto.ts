@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsInt, IsNotEmpty, IsOptional, IsPositive, IsString, Length, Max, Min } from 'class-validator';
+import { IsBoolean, IsInt, IsNotEmpty, IsOptional, IsPositive, IsString, Length, Max, Min } from 'class-validator';
 
 export class CreateProductDto {
   @IsString()
@@ -16,7 +16,7 @@ export class CreateProductDto {
   @IsPositive()
   @Min(10000)
   @Max(1000000)
-  @ApiPropertyOptional({ type: 'integer', example: 100 })
+  @ApiPropertyOptional({ type: 'integer', example: 100000 })
   price?: number;
 
   @IsOptional()
@@ -27,6 +27,37 @@ export class CreateProductDto {
   @Max(100)
   @ApiPropertyOptional({ type: 'integer', example: 10 })
   quantity?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value, 10))
+  @IsInt()
+  @IsPositive()
+  @ApiPropertyOptional({ type: 'integer', example: 10 })
+  height?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value, 10))
+  @IsInt()
+  @IsPositive()
+  @ApiPropertyOptional({ type: 'integer', example: 10 })
+  width?: number;
+
+  @Transform(({ value }) => parseInt(value, 10))
+  @IsInt()
+  @IsPositive()
+  @ApiProperty({ type: 'integer', example: 533190 })
+  dkp: number;
+
+  @Transform(({ value }) => parseInt(value, 10))
+  @IsInt()
+  @IsPositive()
+  @ApiProperty({ type: 'integer', example: 576139 })
+  dkpc: number;
+
+  @IsBoolean()
+  @Transform(({ value }) => (value === 'true' ? true : value === 'false' ? false : value))
+  @ApiPropertyOptional()
+  status: boolean;
 
   @Transform(({ value }) => parseInt(value, 10))
   @IsInt()

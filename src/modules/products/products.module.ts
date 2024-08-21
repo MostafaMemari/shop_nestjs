@@ -7,11 +7,19 @@ import { Product } from './entities/product.entity';
 import { SellersModule } from '../sellers/sellers.module';
 import { ColorsModule } from '../colors/colors.module';
 import { CategoriesModule } from '../categories/categories.module';
-import { ProductsRepository } from './products.repository';
+import { ProductSettings } from './entities/product-settings.entity';
+import { ProductsRepository } from './repository/products.repository';
+import { ProductSettingsRepository } from './repository/product-settings.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Product]), AuthModule, SellersModule, ColorsModule, CategoriesModule],
+  imports: [
+    TypeOrmModule.forFeature([Product, ProductSettings]),
+    AuthModule,
+    SellersModule,
+    ColorsModule,
+    CategoriesModule,
+  ],
   controllers: [ProductsController],
-  providers: [ProductsService, ProductsRepository],
+  providers: [ProductsService, ProductsRepository, ProductSettingsRepository],
 })
 export class ProductsModule {}

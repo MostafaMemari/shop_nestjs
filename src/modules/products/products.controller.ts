@@ -1,14 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UsePipes, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, ParseIntPipe, Put } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { SwaggerConsumes } from 'src/common/enums/swagger-consumes.enum';
 import { ValidateIdsPipe } from './pipe/validate-ids.pipe';
 import { AuthDecorator } from 'src/common/decorators/auth.decorator';
+import { productSettingsDto } from './dto/product-settings.dto';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 
 @Controller('products')
 @ApiTags('Product')
@@ -21,6 +22,16 @@ export class ProductsController {
   @UsePipes(ValidateIdsPipe)
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
+  }
+
+  @Put('/:id/settings')
+  @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
+  createAndUpdateProductSettings(
+    @Param('id', ParseIntPipe) id: string,
+    @Body() productSettingsDto: productSettingsDto,
+    @GetUser() user: User,
+  ) {
+    return this.productsService.createAndUpdateProductSettings(+id, productSettingsDto, user);
   }
 
   @Get()

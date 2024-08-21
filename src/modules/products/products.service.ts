@@ -1,14 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ProductsRepository } from './products.repository';
 import { ProductsMessage } from 'src/common/enums/messages.enum';
 import { User } from '../users/entities/user.entity';
-import { EntityName } from 'src/common/enums/entity.enum';
+import { productSettingsDto } from './dto/product-settings.dto';
+import { ProductsRepository } from './repository/products.repository';
+import { ProductSettingsRepository } from './repository/product-settings.repository';
 
 @Injectable()
 export class ProductsService {
-  constructor(private readonly productRepository: ProductsRepository) {}
+  constructor(
+    private readonly productRepository: ProductsRepository,
+    private readonly ProductSettingsRepository: ProductSettingsRepository,
+  ) {}
 
   async create(createProductDto: CreateProductDto) {
     await this.productRepository.createProduct(createProductDto);
@@ -18,12 +22,22 @@ export class ProductsService {
     };
   }
 
+  async createAndUpdateProductSettings(id: number, productSettingsDto: productSettingsDto, user: User) {
+    const product = await this.findOneByIdAndRelationSetting(id, user);
+    await this.ProductSettingsRepository.createAndUpdateProductSettings(id, product, productSettingsDto);
+  }
+
   async findAll(user: User) {
     return await this.productRepository.findUserProducts(user);
   }
 
   async findOneById(id: number, user: User) {
     const product = await this.productRepository.findUserProductById(id, user);
+    if (!product) throw new NotFoundException(ProductsMessage.NotFoundProduct);
+    return product;
+  }
+  async findOneByIdAndRelationSetting(id: number, user: User) {
+    const product = await this.productRepository.findOneByIdAndRelationSetting(id, user);
     if (!product) throw new NotFoundException(ProductsMessage.NotFoundProduct);
     return product;
   }
