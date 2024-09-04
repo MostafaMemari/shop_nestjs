@@ -37,7 +37,7 @@ export class ProductsRepository extends Repository<Product> {
   async findUserProductById(id: number, user: User) {
     return await this.createQueryBuilder(EntityName.Products)
       .where('products.id = :id', { id })
-      .leftJoinAndSelect('products.seller', 'seller')
+      .leftJoin('products.seller', 'seller')
       .andWhere('seller.userId = :userId', { userId: user.id })
       .getOne();
   }

@@ -3,6 +3,7 @@ import { DataSource, Repository } from 'typeorm';
 import { Transaction } from './entities/transaction.entity';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { Product } from '../products/entities/product.entity';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class TransactionRepository extends Repository<Transaction> {
@@ -10,9 +11,10 @@ export class TransactionRepository extends Repository<Transaction> {
     super(Transaction, dataSource.createEntityManager());
   }
 
-  async createTransaction(productId: number, createTransactionDto: CreateTransactionDto) {
+  async createTransaction(productId: number, createTransactionDto: CreateTransactionDto, user: User) {
     const transaction = this.create({
-      product: { id: productId },
+      productId,
+      userId: user.id,
       ...createTransactionDto,
     });
     try {

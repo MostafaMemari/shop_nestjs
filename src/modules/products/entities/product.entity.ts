@@ -30,21 +30,30 @@ export class Product extends BaseEntity {
   @Column({ type: 'integer' })
   dkpc: number;
 
+  @Column({ type: 'integer', nullable: true })
+  categoryId: number;
+
+  @Column({ type: 'integer' })
+  sellerId: number;
+
+  @Column({ type: 'integer', nullable: true })
+  colorId: number;
+
   @Column({ type: 'boolean', default: true })
   status: boolean;
 
-  @ManyToOne(() => Seller, (seller) => seller.products, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Seller, (seller) => seller.products, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn()
   seller: Seller;
 
   @OneToMany(() => Transaction, (transaction) => transaction.product, { cascade: true })
   transactions: Transaction[];
 
-  @ManyToOne(() => Color, (color) => color.products, { nullable: false })
+  @ManyToOne(() => Color, (color) => color.products, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn()
   color: Color;
 
-  @ManyToOne(() => Category, (category) => category.products, { nullable: false })
+  @ManyToOne(() => Category, (category) => category.products, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn()
   category: Category;
 

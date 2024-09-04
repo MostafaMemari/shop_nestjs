@@ -8,6 +8,6 @@ export class Category extends BaseEntity {
   @Column({ type: 'varchar', unique: true, nullable: false, length: 50 })
   name: string;
 
-  @OneToMany(() => Product, (product) => product.category)
+  @OneToMany(() => Product, (product) => product.category, { onDelete: 'SET NULL' })
   products: Product[];
 }

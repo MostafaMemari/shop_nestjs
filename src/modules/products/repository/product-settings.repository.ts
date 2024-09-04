@@ -14,6 +14,7 @@ export class ProductSettingsRepository extends Repository<ProductSettings> {
     try {
       if (product.product_settings) {
         this.merge(product.product_settings, productSettingsDto);
+
         await this.save(product.product_settings);
       } else {
         const newSetting = this.create({ ...productSettingsDto, product: { id } });

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { UsersRepository } from './users.repository';
 import { RegisterDto } from '../auth/dto/register.dto';
@@ -10,8 +10,9 @@ export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
   async findByEmail(email: string): Promise<User> {
-    return this.usersRepository.findOneBy({ email });
+    return await this.usersRepository.findOneBy({ email });
   }
+
   async findUserByEmailOrUsername(identifier: string): Promise<User> {
     const user = await this.usersRepository.findOne({
       where: [{ email: identifier }, { username: identifier }],
@@ -22,11 +23,20 @@ export class UsersService {
     return user;
   }
 
+  async checkExistUserByEmail(email: string) {
+    const user = await this.usersRepository.findOneBy({ email });
+    if (user) throw new ConflictException(AuthMessage.AlreadyExistAccount);
+  }
+  async checkExistUserByUsername(username: string) {
+    const user = await this.usersRepository.findOneBy({ username });
+    if (user) throw new ConflictException(AuthMessage.AlreadyExistAccount);
+  }
+
   async create(registerDto: RegisterDto): Promise<User> {
-    const { email, password, username } = registerDto;
+    const { password } = registerDto;
 
     const hashedPassword = await HashUtil.hashPassword(password);
-    const user = this.usersRepository.create({ email, password: hashedPassword, username });
+    const user = this.usersRepository.create({ ...registerDto, password: hashedPassword });
 
     return this.usersRepository.save(user);
   }

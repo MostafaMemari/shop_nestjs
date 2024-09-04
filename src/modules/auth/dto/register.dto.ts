@@ -33,6 +33,34 @@ export class RegisterDto {
   @IsString()
   @Transform(({ value }) => value?.trim())
   @IsNotEmpty()
+  @Length(2, 50)
+  @ApiProperty({
+    type: 'string',
+    maxLength: 50,
+    minLength: 2,
+    required: true,
+    uniqueItems: true,
+    example: '',
+  })
+  first_name: string;
+
+  @IsString()
+  @Transform(({ value }) => value?.trim())
+  @IsNotEmpty()
+  @Length(2, 50)
+  @ApiProperty({
+    type: 'string',
+    maxLength: 50,
+    minLength: 2,
+    required: true,
+    uniqueItems: true,
+    example: '',
+  })
+  last_name: string;
+
+  @IsString()
+  @Transform(({ value }) => value?.trim())
+  @IsNotEmpty()
   // @MaxLength(30)
   // @MinLength(8)
   @Length(8, 30)

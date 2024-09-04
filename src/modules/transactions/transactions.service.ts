@@ -21,9 +21,9 @@ export class TransactionsService {
 
     const product = await this.productService.findOneById(productId, user);
     adjustProductQuantity(product, quantity, type);
-    await this.transactionRepository.createTransaction(productId, createTransactionDto);
+    await this.transactionRepository.createTransaction(productId, createTransactionDto, user);
+    await this.productRepository.update(productId, { quantity: product.quantity });
 
-    this.productRepository.update(productId, { quantity: product.quantity });
     return {
       message: TransactionsMessage.CreatedTransactionSuccess,
     };

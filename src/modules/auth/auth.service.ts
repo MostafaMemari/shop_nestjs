@@ -22,8 +22,15 @@ export class AuthService {
     return { accessToken };
   }
 
-  async register(registerDto: RegisterDto): Promise<User> {
-    return this.usersService.create(registerDto);
+  async register(registerDto: RegisterDto): Promise<{ accessToken: string }> {
+    await this.usersService.checkExistUserByEmail(registerDto.email);
+    await this.usersService.checkExistUserByUsername(registerDto.username);
+    const user = await this.usersService.create(registerDto);
+
+    console.log(user);
+    const payload: JwtPayload = { id: user.id, role: user.role };
+    const accessToken = this.jwtService.sign(payload);
+    return { accessToken };
   }
 
   async validateUser(identifier: string, password: string): Promise<User> {

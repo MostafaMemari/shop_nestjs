@@ -15,7 +15,7 @@ export class Seller extends BaseEntity {
   @Column({ type: 'varchar', nullable: true })
   phone: string;
 
-  @ManyToOne(() => User, (user) => user.stores, { nullable: false })
+  @ManyToOne(() => User, (user) => user.sellers, { onDelete: 'SET NULL', nullable: false })
   user: User;
 
   @OneToMany(() => Product, (product) => product.seller)
