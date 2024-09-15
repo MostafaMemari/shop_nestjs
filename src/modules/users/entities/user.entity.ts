@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { BaseEntity } from 'src/common/abstracts/base.entity';
 import { EntityName } from 'src/common/enums/entity.enum';
 import { Roles } from 'src/common/enums/role.enum';
@@ -20,6 +21,7 @@ export class User extends BaseEntity {
   last_name: string;
 
   @Column({ type: 'varchar', select: false, nullable: true })
+  @Exclude()
   password?: string;
 
   @Column({ type: 'enum', enum: Roles, default: Roles.User })

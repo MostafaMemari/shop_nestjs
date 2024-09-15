@@ -16,7 +16,8 @@ export class UsersService {
   async findUserByEmailOrUsername(identifier: string): Promise<User> {
     const user = await this.usersRepository.findOne({
       where: [{ email: identifier }, { username: identifier }],
-      select: { password: true, email: true, id: true, role: true },
+      // select: { password: true, email: true, id: true, role: true },
+      select: ['password', 'email', 'id', 'role'],
     });
     if (!user) throw new NotFoundException(AuthMessage.NotFoundAccount);
 

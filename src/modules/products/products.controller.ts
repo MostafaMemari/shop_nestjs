@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, ParseIntPipe, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, ParseIntPipe, Put, Query } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
+import { CreateProductDto, FilterProductDto, UpdateProductDto } from './dto/product.dto';
 
 import { SwaggerConsumes } from 'src/common/enums/swagger-consumes.enum';
 import { ValidateIdsPipe } from './pipe/validate-ids.pipe';
@@ -9,6 +9,9 @@ import { productSettingsDto } from './dto/product-settings.dto';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { User } from '../users/entities/user.entity';
+import { Pagination } from 'src/common/decorators/pagination.decorator';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { FilterProduct } from 'src/common/decorators/filter.decorator';
 
 @Controller('products')
 @ApiTags('Product')
@@ -34,8 +37,10 @@ export class ProductsController {
   }
 
   @Get()
-  findAll(@GetUser() user: User) {
-    return this.productsService.findAll(user);
+  @Pagination()
+  @FilterProduct()
+  findAll(@GetUser() user: User, @Query() paginationDto: PaginationDto, @Query() filterDto: FilterProductDto) {
+    return this.productsService.findAll(user, paginationDto, filterDto);
   }
 
   @Get(':id')

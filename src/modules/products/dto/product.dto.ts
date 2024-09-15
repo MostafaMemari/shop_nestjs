@@ -82,4 +82,10 @@ export class CreateProductDto {
   categoryId?: number;
 }
 
+export class FilterProductDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  search: string;
+}
+
 export class UpdateProductDto extends PartialType(CreateProductDto) {}

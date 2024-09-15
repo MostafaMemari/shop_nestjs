@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
+import { CreateProductDto, FilterProductDto, UpdateProductDto } from './dto/product.dto';
 import { ProductsMessage } from 'src/common/enums/messages.enum';
 import { User } from '../users/entities/user.entity';
 import { productSettingsDto } from './dto/product-settings.dto';
 import { ProductsRepository } from './repository/products.repository';
 import { ProductSettingsRepository } from './repository/product-settings.repository';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 @Injectable()
 export class ProductsService {
@@ -31,8 +32,8 @@ export class ProductsService {
     };
   }
 
-  async findAll(user: User) {
-    return await this.productRepository.findUserProducts(user);
+  async findAll(user: User, paginationDto: PaginationDto, filterDto: FilterProductDto) {
+    return await this.productRepository.findUserProducts(user, paginationDto, filterDto);
   }
 
   async findOneById(id: number, user: User) {
