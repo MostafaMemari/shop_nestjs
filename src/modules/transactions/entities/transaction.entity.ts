@@ -8,8 +8,8 @@ export class Transaction {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'decimal' })
-  price: number;
+  @Column({ type: 'decimal', nullable: true })
+  price: number | null;
 
   @Column({ type: 'int' })
   quantity: number;
