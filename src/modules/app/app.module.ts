@@ -11,6 +11,7 @@ import { UsersModule } from '../users/users.module';
 import { ProductsModule } from '../products/products.module';
 import { SellersModule } from '../sellers/sellers.module';
 import { TransactionsModule } from '../transactions/transactions.module';
+import { InvoiceModule } from '../invoice/invoice.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { TransactionsModule } from '../transactions/transactions.module';
     ProductsModule,
     SellersModule,
     TransactionsModule,
+    InvoiceModule
   ],
   controllers: [],
   providers: [{ provide: APP_PIPE, useValue: new ValidationPipe({ whitelist: true }) }],

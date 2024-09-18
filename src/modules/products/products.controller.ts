@@ -1,4 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, ParseIntPipe, Put, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UsePipes,
+  ParseIntPipe,
+  Put,
+  Query,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto, FilterProductDto, UpdateProductDto } from './dto/product.dto';
 
@@ -12,6 +25,10 @@ import { User } from '../users/entities/user.entity';
 import { Pagination } from 'src/common/decorators/pagination.decorator';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { FilterProduct } from 'src/common/decorators/filter.decorator';
+import * as fs from 'fs';
+import { promisify } from 'util';
+
+const readFileAsync = promisify(fs.readFile);
 
 @Controller('products')
 @ApiTags('Product')
@@ -19,14 +36,26 @@ import { FilterProduct } from 'src/common/decorators/filter.decorator';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @Get('create-products')
+  async createProductsByJson(@GetUser() user: User) {
+    try {
+      const filePath = `${process.cwd()}/src/modules/products/product-management.products.json`;
+      const products = await readFileAsync(filePath, 'utf-8');
+      return this.productsService.createProductsByJson(user, JSON.parse(products));
+    } catch (error) {
+      console.error('Error reading the products file:', error);
+      throw new InternalServerErrorException('Could not read products file.');
+    }
+  }
+
   @Post('')
   @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
   @UsePipes(ValidateIdsPipe)
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productsService.create(createProductDto);
+  create(@GetUser() user: User, @Body() createProductDto: CreateProductDto) {
+    return this.productsService.create(user, createProductDto);
   }
 
-  @Put('/:id/settings')
+  @Patch('/:id/settings')
   @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
   createAndUpdateProductSettings(
     @Param('id', ParseIntPipe) id: string,
@@ -48,7 +77,7 @@ export class ProductsController {
     return this.productsService.findOneById(+id, user);
   }
 
-  @Patch(':id')
+  @Put(':id')
   @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
   @UsePipes(ValidateIdsPipe)
   update(@Param('id', ParseIntPipe) id: string, @Body() updateProductDto: UpdateProductDto, @GetUser() user: User) {

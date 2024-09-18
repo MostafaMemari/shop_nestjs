@@ -4,7 +4,7 @@ import { ProductsMessage } from '../enums/messages.enum';
 import { Product } from 'src/modules/products/entities/product.entity';
 
 export function adjustProductQuantity(product: Product, quantity: number, type: TransactionType) {
-  if (type === TransactionType.DAMAGE || type === TransactionType.SALE) {
+  if (type === TransactionType.DAMAGE || type === TransactionType.SALE || type === TransactionType.DEPO) {
     if (product.quantity < quantity) {
       throw new BadRequestException(ProductsMessage.SaleExceedsStock);
     }

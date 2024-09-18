@@ -40,7 +40,11 @@ export class ProductsRepository extends Repository<Product> {
 
     if (search) query.andWhere('products.name LIKE :search', { search: `%${search}%` });
 
-    const [products, count] = await query.skip(skip).take(limit).getManyAndCount();
+    const [products, count] = await query
+      .orderBy('products.updated_at', 'DESC')
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount();
 
     return {
       pagination: paginationGenerator(count, page, limit),
