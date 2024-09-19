@@ -1,5 +1,5 @@
 import { Module, ValidationPipe } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { envValidationSchema } from 'src/common/validation/env.validation';
 import { typeOrmConfigAsync } from 'src/config/typeorm.config';
@@ -12,6 +12,9 @@ import { ProductsModule } from '../products/products.module';
 import { SellersModule } from '../sellers/sellers.module';
 import { TransactionsModule } from '../transactions/transactions.module';
 import { InvoiceModule } from '../invoice/invoice.module';
+import { AwsModule } from '../aws/aws.module';
+import { AwsSdkModule } from 'nest-aws-sdk';
+import { awsSdkConfig } from 'src/config/aws.config';
 
 @Module({
   imports: [
@@ -21,6 +24,8 @@ import { InvoiceModule } from '../invoice/invoice.module';
       validationSchema: envValidationSchema,
     }),
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
+    AwsSdkModule.forRoot(awsSdkConfig()),
+
     ColorsModule,
     CategoriesModule,
     AuthModule,
@@ -28,7 +33,8 @@ import { InvoiceModule } from '../invoice/invoice.module';
     ProductsModule,
     SellersModule,
     TransactionsModule,
-    InvoiceModule
+    InvoiceModule,
+    AwsModule,
   ],
   controllers: [],
   providers: [{ provide: APP_PIPE, useValue: new ValidationPipe({ whitelist: true }) }],

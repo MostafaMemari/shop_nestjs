@@ -13,6 +13,14 @@ export const envValidationSchema = Joi.object({
   DB_PASSWORD: Joi.string().default('').allow(''),
   DB_NAME: Joi.string().default('shop'),
 
+  // JWT
   JWT_SECRET: Joi.string().required(),
   JWT_EXPIRES_IN: Joi.string().required(),
+
+  // AWS
+  AWS_REGION: Joi.string().default('default'),
+  AWS_ACCESS_KEY_ID: Joi.string().required(),
+  AWS_SECRET_ACCESS_KEY: Joi.string().required(),
+  AWS_BUCKET_NAME: Joi.string().required(),
+  AWS_ENDPOINT: Joi.string().required(),
 });

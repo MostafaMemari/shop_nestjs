@@ -11,6 +11,11 @@ import {
   Put,
   Query,
   InternalServerErrorException,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto, FilterProductDto, UpdateProductDto } from './dto/product.dto';
@@ -27,6 +32,7 @@ import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { FilterProduct } from 'src/common/decorators/filter.decorator';
 import * as fs from 'fs';
 import { promisify } from 'util';
+import { UploadFileS3 } from 'src/common/interceptors/upload-file.interceptor';
 
 const readFileAsync = promisify(fs.readFile);
 
@@ -36,23 +42,36 @@ const readFileAsync = promisify(fs.readFile);
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  @Get('create-products')
-  async createProductsByJson(@GetUser() user: User) {
-    try {
-      const filePath = `${process.cwd()}/src/modules/products/product-management.products.json`;
-      const products = await readFileAsync(filePath, 'utf-8');
-      return this.productsService.createProductsByJson(user, JSON.parse(products));
-    } catch (error) {
-      console.error('Error reading the products file:', error);
-      throw new InternalServerErrorException('Could not read products file.');
-    }
-  }
+  // @Get('create-products')
+  // async createProductsByJson(@GetUser() user: User) {
+  //   try {
+  //     const filePath = `${process.cwd()}/src/modules/products/product-management.products.json`;
+  //     const products = await readFileAsync(filePath, 'utf-8');
+  //     return this.productsService.createProductsByJson(user, JSON.parse(products));
+  //   } catch (error) {
+  //     console.error('Error reading the products file:', error);
+  //     throw new InternalServerErrorException('Could not read products file.');
+  //   }
+  // }
 
   @Post('')
-  @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
+  @ApiConsumes(SwaggerConsumes.MultipartData)
   @UsePipes(ValidateIdsPipe)
-  create(@GetUser() user: User, @Body() createProductDto: CreateProductDto) {
-    return this.productsService.create(user, createProductDto);
+  @UseInterceptors(UploadFileS3('image'))
+  async create(
+    @GetUser() user: User,
+    @Body() createProductDto: CreateProductDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 }),
+          new FileTypeValidator({ fileType: 'image/(png|jpg|jpeg|webp)' }),
+        ],
+      }),
+    )
+    image: Express.Multer.File,
+  ) {
+    return this.productsService.create(user, createProductDto, image);
   }
 
   @Patch('/:id/settings')

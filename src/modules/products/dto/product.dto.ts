@@ -11,6 +11,9 @@ export class CreateProductDto {
   @ApiProperty({ type: 'string', required: true, example: 'Sample Product' })
   name: string;
 
+  @ApiPropertyOptional({ type: 'string', format: 'binary' })
+  image?: string;
+
   @IsOptional()
   @Transform(({ value }) => parseInt(value, 10))
   @IsInt()

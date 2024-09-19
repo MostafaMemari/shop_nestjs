@@ -14,7 +14,7 @@ export class ProductsRepository extends Repository<Product> {
     super(Product, dataSource.createEntityManager());
   }
 
-  async createProduct(createProductDto: CreateProductDto) {
+  async createProduct(createProductDto: CreateProductDto, imageDetails: { Location: string; Key: string }) {
     const { sellerId, colorId, categoryId } = createProductDto;
 
     const product = this.create({
@@ -22,14 +22,18 @@ export class ProductsRepository extends Repository<Product> {
       seller: { id: sellerId },
       color: { id: colorId },
       category: { id: categoryId },
+      image: imageDetails.Location,
+      image_key: imageDetails.Key,
     });
+
     try {
       await this.save(product);
     } catch (error) {
-      console.log(error.message);
+      console.error('Error creating product:', error.message);
       throw new InternalServerErrorException('Failed to create product');
     }
   }
+
   async findUserProducts(user: User, paginationDto: PaginationDto, filterDto: FilterProductDto) {
     const { limit, page, skip } = paginationSolver(paginationDto);
     let { search } = filterDto;

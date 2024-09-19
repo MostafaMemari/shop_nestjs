@@ -10,6 +10,7 @@ import { ProductSettings } from './entities/product-settings.entity';
 import { ProductsRepository } from './repository/products.repository';
 import { ProductSettingsRepository } from './repository/product-settings.repository';
 import { ProductsController } from './products.controller';
+import { AwsService } from '../aws/aws.service';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { ProductsController } from './products.controller';
     CategoriesModule,
   ],
   controllers: [ProductsController],
-  providers: [ProductsService, ProductsRepository, ProductSettingsRepository],
+  providers: [ProductsService, ProductsRepository, ProductSettingsRepository, AwsService],
   exports: [ProductsService, ProductsRepository],
 })
 export class ProductsModule {}

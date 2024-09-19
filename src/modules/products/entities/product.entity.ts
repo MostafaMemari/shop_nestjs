@@ -22,6 +22,12 @@ export class Product extends BaseEntity {
   @Column({ type: 'varchar' })
   name: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  image: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  image_key: string | null;
+
   @Column({ type: 'numeric', nullable: true })
   price: number | null;
 

@@ -3,6 +3,7 @@ import { AppModule } from './modules/app/app.module';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
 import { swaggerConfigInit } from './config/swagger.config';
+import * as express from 'express';
 
 async function bootstrap() {
   const logger = new Logger();
@@ -12,8 +13,11 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api/v1');
 
+  app.use(express.json({ limit: '50mb' }));
+  app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: 'http://localhost:3005',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });

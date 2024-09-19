@@ -57,6 +57,7 @@ export enum ProductsMessage {
   CannotUpdateProduct = 'You are not allowed to update this product',
   CannotRemoveProduct = 'You are not allowed to remove this product',
   RemoveProductSuccess = 'Product removed successfully',
+  FailedCreateProduct = ' Failed to create product',
 }
 export enum TransactionsMessage {
   CreatedTransactionSuccess = 'Transaction created successfully',
