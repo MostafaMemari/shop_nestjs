@@ -10,7 +10,6 @@ import {
   ParseIntPipe,
   Put,
   Query,
-  InternalServerErrorException,
   UseInterceptors,
   UploadedFile,
   ParseFilePipe,
@@ -33,6 +32,7 @@ import { FilterProduct } from 'src/common/decorators/filter.decorator';
 import * as fs from 'fs';
 import { promisify } from 'util';
 import { UploadFileS3 } from 'src/common/interceptors/upload-file.interceptor';
+import { FileValidationPipe } from 'src/common/pipes/file-validation.pipe';
 
 const readFileAsync = promisify(fs.readFile);
 
@@ -97,10 +97,19 @@ export class ProductsController {
   }
 
   @Put(':id')
-  @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
+  @ApiConsumes(SwaggerConsumes.MultipartData)
   @UsePipes(ValidateIdsPipe)
-  update(@Param('id', ParseIntPipe) id: string, @Body() updateProductDto: UpdateProductDto, @GetUser() user: User) {
-    return this.productsService.update(+id, updateProductDto, user);
+  @UseInterceptors(UploadFileS3('image'))
+  update(
+    @Param('id', ParseIntPipe) id: string,
+    @GetUser() user: User,
+    @Body() updateProductDto: UpdateProductDto,
+    @UploadedFile(
+      new FileValidationPipe(10 * 1024 * 1024, ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'], false),
+    )
+    image?: Express.Multer.File,
+  ) {
+    return this.productsService.update(+id, user, updateProductDto, image);
   }
 
   @Delete(':id')

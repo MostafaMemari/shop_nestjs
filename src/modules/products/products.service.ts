@@ -96,9 +96,15 @@ export class ProductsService {
     return product;
   }
 
-  async update(id: number, updateProductDto: UpdateProductDto, user: User) {
+  async update(id: number, user: User, updateProductDto: UpdateProductDto, image: Express.Multer.File) {
     const { sellerId } = updateProductDto;
+
+    console.log(updateProductDto, image);
+
+    //* Validate seller
     sellerId && (await this.sellerService.findOneById(updateProductDto.sellerId, user));
+
+    //* Find Product
     const product = await this.findOneById(id, user);
 
     this.productRepository.merge(product, updateProductDto);

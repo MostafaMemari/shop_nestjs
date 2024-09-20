@@ -17,10 +17,15 @@ export class ValidateIdsPipe implements PipeTransform {
   ) {}
 
   async transform(value: any) {
+    if (!value) {
+      return value;
+    }
+
+    const { colorId, categoryId, sellerId } = value;
     try {
-      await this.colorService.findOneById(value.colorId);
-      await this.categoriesService.findOneById(value.categoryId);
-      await this.sellerService.findOneById(value.sellerId, this.request.user);
+      if (colorId) await this.colorService.findOneById(colorId);
+      if (categoryId) await this.categoriesService.findOneById(categoryId);
+      if (sellerId) await this.sellerService.findOneById(sellerId, this.request.user);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         throw new NotFoundException(formatErrorMessage(error.message));
