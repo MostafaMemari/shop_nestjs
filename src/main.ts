@@ -12,10 +12,8 @@ async function bootstrap() {
   const PORT = app.get(ConfigService).get<number>('PORT');
 
   app.setGlobalPrefix('api/v1');
-
   app.use(express.json({ limit: '50mb' }));
   app.use(express.urlencoded({ limit: '50mb', extended: true }));
-
   app.enableCors({
     origin: 'http://localhost:3000',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',

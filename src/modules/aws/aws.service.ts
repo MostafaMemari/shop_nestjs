@@ -5,6 +5,7 @@ import { InjectAwsService } from 'nest-aws-sdk';
 import * as path from 'path';
 import { lookup } from 'mime-types';
 import * as sharp from 'sharp';
+import axios from 'axios';
 @Injectable()
 export class AwsService {
   //@ts-ignore
@@ -86,5 +87,30 @@ export class AwsService {
         MultipartUpload: { Parts: allParts },
       })
       .promise();
+  }
+
+  async downloadAndUploadImage(imageUrl: string, key: string): Promise<any> {
+    try {
+      const response = await axios({
+        url: imageUrl,
+        method: 'GET',
+        responseType: 'arraybuffer',
+      });
+      const imageBuffer = response.data;
+
+      const uploadResult = await this.s3
+        .upload({
+          Bucket: process.env.AWS_BUCKET_NAME,
+          Key: key,
+          Body: imageBuffer,
+          ContentType: response.headers['content-type'],
+        })
+        .promise();
+
+      return uploadResult;
+    } catch (error) {
+      console.error('Error downloading or uploading the image:', error);
+      throw error;
+    }
   }
 }

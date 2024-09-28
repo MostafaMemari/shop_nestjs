@@ -29,30 +29,15 @@ import { User } from '../users/entities/user.entity';
 import { Pagination } from 'src/common/decorators/pagination.decorator';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { FilterProduct } from 'src/common/decorators/filter.decorator';
-import * as fs from 'fs';
-import { promisify } from 'util';
+
 import { UploadFileS3 } from 'src/common/interceptors/upload-file.interceptor';
 import { FileValidationPipe } from 'src/common/pipes/file-validation.pipe';
-
-const readFileAsync = promisify(fs.readFile);
 
 @Controller('products')
 @ApiTags('Product')
 @AuthDecorator()
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
-
-  // @Get('create-products')
-  // async createProductsByJson(@GetUser() user: User) {
-  //   try {
-  //     const filePath = `${process.cwd()}/src/modules/products/product-management.products.json`;
-  //     const products = await readFileAsync(filePath, 'utf-8');
-  //     return this.productsService.createProductsByJson(user, JSON.parse(products));
-  //   } catch (error) {
-  //     console.error('Error reading the products file:', error);
-  //     throw new InternalServerErrorException('Could not read products file.');
-  //   }
-  // }
 
   @Post('')
   @ApiConsumes(SwaggerConsumes.MultipartData)
