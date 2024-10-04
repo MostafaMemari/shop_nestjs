@@ -5,9 +5,11 @@ import { User } from '../users/entities/user.entity';
 import { ProductsService } from '../products/products.service';
 import { TransactionRepository } from './transactions.repository';
 import { ProductsRepository } from '../products/repository/products.repository';
-
 import { adjustProductQuantity } from 'src/common/utils/product.utils';
 import { TransactionsMessage } from 'src/common/enums/messages.enum';
+import { EntityName } from 'src/common/enums/entity.enum';
+import { paginationGenerator, paginationSolver } from 'src/common/utils/pagination.util';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 @Injectable()
 export class TransactionsService {
@@ -29,8 +31,24 @@ export class TransactionsService {
     };
   }
 
-  findAll() {
-    return `This action returns all transactions`;
+  async findAll(paginationDto: PaginationDto) {
+    const { limit, page, skip } = paginationSolver(paginationDto);
+
+    const query = this.transactionRepository
+      .createQueryBuilder(EntityName.Transaction)
+      .leftJoin('transaction.product', 'product')
+      .addSelect(['product.name', 'product.image']);
+
+    const [products, count] = await query
+      .orderBy('transaction.createdAt', 'DESC')
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount();
+
+    return {
+      pagination: paginationGenerator(count, page, limit),
+      products,
+    };
   }
 
   findOne(id: number) {

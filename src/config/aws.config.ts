@@ -1,24 +1,21 @@
+// src/config/aws-sdk.config.ts
 import { S3 } from 'aws-sdk';
-import {
-  AwsService,
-  AwsServiceConfigurationOptionsFactory,
-  AwsServiceType,
-  AwsServiceWithServiceOptions,
-} from 'nest-aws-sdk';
+import { ConfigService } from '@nestjs/config';
+import { AwsServiceConfigurationOptionsFactory } from 'nest-aws-sdk';
 
-export const awsSdkConfig = (): {
-  defaultServiceOptions?: AwsServiceConfigurationOptionsFactory;
-  services?: Array<AwsServiceType<AwsService> | AwsServiceWithServiceOptions>;
-} => {
-  return {
-    defaultServiceOptions: {
-      region: 'default',
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      },
-      endpoint: process.env.AWS_ENDPOINT,
-    },
-    services: [S3],
-  };
+export const awsSdkConfigFactory = (configService: ConfigService): AwsServiceConfigurationOptionsFactory => ({
+  region: configService.get<string>('AWS_REGION'),
+  credentials: {
+    accessKeyId: configService.get<string>('AWS_ACCESS_KEY_ID'),
+    secretAccessKey: configService.get<string>('AWS_SECRET_ACCESS_KEY'),
+  },
+  endpoint: configService.get<string>('AWS_ENDPOINT'),
+});
+
+export const awsSdkConfigAsync = {
+  defaultServiceOptions: {
+    inject: [ConfigService],
+    useFactory: awsSdkConfigFactory,
+  },
+  services: [S3],
 };

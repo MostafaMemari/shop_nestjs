@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
@@ -7,6 +7,8 @@ import { User } from '../users/entities/user.entity';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { AuthDecorator } from 'src/common/decorators/auth.decorator';
 import { SwaggerConsumes } from 'src/common/enums/swagger-consumes.enum';
+import { Pagination } from 'src/common/decorators/pagination.decorator';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 @Controller('transactions')
 @ApiTags('Transactions')
@@ -25,8 +27,9 @@ export class TransactionsController {
   }
 
   @Get()
-  findAll() {
-    return this.transactionsService.findAll();
+  @Pagination()
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.transactionsService.findAll(paginationDto);
   }
 
   @Get(':id')
