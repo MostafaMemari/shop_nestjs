@@ -1,6 +1,6 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsPositive, Max, Min } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsPositive, Max, Min } from 'class-validator';
 import { TransactionType } from '../enum/transaction-type.enum';
 
 export class CreateTransactionDto {
@@ -23,5 +23,13 @@ export class CreateTransactionDto {
 
   @IsEnum(TransactionType)
   @ApiProperty({ type: 'enum', enum: TransactionType })
+  type: TransactionType;
+}
+
+export class UpdateTransactionDto extends PartialType(CreateTransactionDto) {}
+
+export class TransactionTypeDto {
+  @ApiProperty({ enum: TransactionType })
+  @IsEnum(TransactionType)
   type: TransactionType;
 }

@@ -23,7 +23,7 @@ import { SwaggerConsumes } from 'src/common/enums/swagger-consumes.enum';
 import { ValidateIdsPipe } from './pipe/validate-ids.pipe';
 import { AuthDecorator } from 'src/common/decorators/auth.decorator';
 import { productSettingsDto } from './dto/product-settings.dto';
-import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiParam, ApiTags } from '@nestjs/swagger';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { Pagination } from 'src/common/decorators/pagination.decorator';
@@ -32,6 +32,7 @@ import { FilterProduct } from 'src/common/decorators/filter.decorator';
 
 import { UploadFileS3 } from 'src/common/interceptors/upload-file.interceptor';
 import { FileValidationPipe } from 'src/common/pipes/file-validation.pipe';
+import { TransactionType } from '../transactions/enum/transaction-type.enum';
 
 @Controller('products')
 @ApiTags('Product')
@@ -73,7 +74,20 @@ export class ProductsController {
   @Pagination()
   @FilterProduct()
   findAll(@GetUser() user: User, @Query() paginationDto: PaginationDto, @Query() filterDto: FilterProductDto) {
-    return this.productsService.findAll(user, paginationDto, filterDto);
+    return this.productsService.findAll(user, filterDto, paginationDto);
+  }
+
+  @Get(':type')
+  @Pagination()
+  @FilterProduct()
+  @ApiParam({ name: 'type', enum: TransactionType })
+  findAllByTransactionType(
+    @GetUser() user: User,
+    @Query() paginationDto: PaginationDto,
+    @Query() filterDto: FilterProductDto,
+    @Param('type') type: TransactionType,
+  ) {
+    return this.productsService.findAllByTransactionType(user, type, filterDto, paginationDto);
   }
 
   @Get(':id')

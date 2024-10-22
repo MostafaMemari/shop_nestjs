@@ -2,7 +2,7 @@ import * as Joi from '@hapi/joi';
 
 export const envValidationSchema = Joi.object({
   // Application
-  NODE_ENV: Joi.string().valid('development', 'production', 'test').default('development'),
+  NODE_ENV: Joi.string().valid('development', 'production', 'production.local').default('development'),
   PORT: Joi.number().default(3500),
 
   // Database
@@ -12,6 +12,8 @@ export const envValidationSchema = Joi.object({
   DB_USERNAME: Joi.string().default('postgres'),
   DB_PASSWORD: Joi.string().default('').allow(''),
   DB_NAME: Joi.string().default('shop'),
+  DB_SYNCHRONIZE: Joi.number().integer().valid(0, 1).default(0),
+  DB_SSL: Joi.number().integer().valid(0, 1).default(0),
 
   // JWT
   JWT_SECRET: Joi.string().required(),

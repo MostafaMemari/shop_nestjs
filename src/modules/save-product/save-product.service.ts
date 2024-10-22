@@ -7,14 +7,14 @@ import { AwsService } from '../aws/aws.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from '../products/entities/product.entity';
 import { Repository } from 'typeorm';
-import { ProductsRepository } from '../products/repository/products.repository';
+import { ProductRepository } from '../products/repository/products.repository';
 
 @Injectable()
 export class SaveProductService {
   constructor(
     private readonly productsService: ProductsService,
     private readonly awsService: AwsService,
-    private readonly productRepository: ProductsRepository,
+    private readonly productRepository: ProductRepository,
   ) {}
   async createProductsByJson(user: User, products: any) {
     for (const product of products) {

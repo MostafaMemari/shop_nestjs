@@ -2,8 +2,9 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, On
 import { TransactionType } from '../enum/transaction-type.enum';
 import { Product } from 'src/modules/products/entities/product.entity';
 import { User } from 'src/modules/users/entities/user.entity';
+import { EntityName } from 'src/common/enums/entity.enum';
 
-@Entity()
+@Entity(EntityName.Transaction)
 export class Transaction {
   @PrimaryGeneratedColumn()
   id: number;
@@ -24,7 +25,7 @@ export class Transaction {
   productId: number;
 
   @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
+  created_at: Date;
 
   @ManyToOne(() => User, (user) => user.transactions, { onDelete: 'CASCADE' })
   user: User;

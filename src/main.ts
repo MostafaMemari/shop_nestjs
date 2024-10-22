@@ -4,6 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
 import { swaggerConfigInit } from './config/swagger.config';
 import * as express from 'express';
+import { getServerIp } from './common/utils/functions';
+import { DataSource } from 'typeorm';
 
 async function bootstrap() {
   const logger = new Logger();
@@ -15,7 +17,7 @@ async function bootstrap() {
   app.use(express.json({ limit: '50mb' }));
   app.use(express.urlencoded({ limit: '50mb', extended: true }));
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
@@ -23,10 +25,13 @@ async function bootstrap() {
   // app.useGlobalPipes(new ValidationPipe());
 
   swaggerConfigInit(app);
+  await app.listen(PORT, '0.0.0.0', () => {
+    const serverIp = getServerIp();
+    const dataSource = app.get(DataSource);
 
-  await app.listen(PORT, () => {
-    logger.log(`Application listening on port ${PORT}`);
-    console.log(`swagger : http://localhost:${PORT}/swagger`);
+    logger.log(`Application listening on port => ${PORT}`);
+    logger.log(`Connected to database => ${dataSource.options.database}`);
+    console.log(`swagger : http://${serverIp}:${PORT}/swagger`);
   });
 }
 bootstrap();

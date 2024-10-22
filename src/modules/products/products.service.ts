@@ -3,16 +3,18 @@ import { CreateProductDto, FilterProductDto, UpdateProductDto } from './dto/prod
 import { ProductsMessage } from 'src/common/enums/messages.enum';
 import { User } from '../users/entities/user.entity';
 import { productSettingsDto } from './dto/product-settings.dto';
-import { ProductsRepository } from './repository/products.repository';
 import { ProductSettingsRepository } from './repository/product-settings.repository';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { SellerService } from '../sellers/sellers.service';
 import { AwsService } from '../aws/aws.service';
+import { paginationSolver } from 'src/common/utils/pagination.util';
+import { ProductRepository } from './repository/products.repository';
+import { TransactionType } from '../transactions/enum/transaction-type.enum';
 
 @Injectable()
 export class ProductsService {
   constructor(
-    private readonly productRepository: ProductsRepository,
+    private readonly productRepository: ProductRepository,
     private readonly ProductSettingsRepository: ProductSettingsRepository,
     private readonly sellerService: SellerService,
     private readonly awsService: AwsService,
@@ -21,18 +23,14 @@ export class ProductsService {
   async create(user: User, createProductDto: CreateProductDto, image: Express.Multer.File): Promise<string> {
     const { sellerId } = createProductDto;
 
-    //* Validate seller
     await this.sellerService.findOneById(sellerId, user);
 
-    //* Upload image
     const { Location, Key } = await this.awsService.uploadFile(image, 'product-test');
 
     try {
-      //* Create product
       await this.productRepository.createProduct(createProductDto, { Location, Key });
       return ProductsMessage.CreatedProductSuccess;
     } catch (error) {
-      //* If an error occurs, delete the uploaded image
       await this.awsService.deleteFile(Location);
       throw new InternalServerErrorException(ProductsMessage.FailedCreateProduct);
     }
@@ -47,8 +45,22 @@ export class ProductsService {
     };
   }
 
-  async findAll(user: User, paginationDto: PaginationDto, filterDto: FilterProductDto) {
-    return await this.productRepository.findUserProducts(user, paginationDto, filterDto);
+  async findAll(user: User, filterDto: FilterProductDto, paginationDto: PaginationDto) {
+    const { limit, page, skip } = paginationSolver(paginationDto);
+    const { search } = filterDto;
+
+    return await this.productRepository.findUserProducts(user, { limit, page, skip, search });
+  }
+  async findAllByTransactionType(
+    user: User,
+    type: TransactionType,
+    filterDto: FilterProductDto,
+    paginationDto: PaginationDto,
+  ) {
+    const { limit, page, skip } = paginationSolver(paginationDto);
+    const { search } = filterDto;
+
+    return await this.productRepository.findUserProductsReport(user, { limit, page, skip, search, type });
   }
 
   async findOneById(id: number, user: User) {

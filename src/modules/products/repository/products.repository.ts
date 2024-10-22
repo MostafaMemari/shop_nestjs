@@ -1,19 +1,18 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Product } from '../entities/product.entity';
 
 import { CreateProductDto, FilterProductDto } from '../dto/product.dto';
 import { User } from '../../users/entities/user.entity';
 import { EntityName } from 'src/common/enums/entity.enum';
-import { PaginationDto } from 'src/common/dtos/pagination.dto';
-import { paginationGenerator, paginationSolver } from 'src/common/utils/pagination.util';
+import { paginationGenerator } from 'src/common/utils/pagination.util';
+import { getPreviousMonthDate } from 'src/common/utils/functions';
 
 @Injectable()
-export class ProductsRepository extends Repository<Product> {
-  constructor(dataSource: DataSource) {
+export class ProductRepository extends Repository<Product> {
+  constructor(private readonly dataSource: DataSource) {
     super(Product, dataSource.createEntityManager());
   }
-
   async createProduct(createProductDto: CreateProductDto, imageDetails: { Location: string; Key: string }) {
     const { sellerId, colorId, categoryId } = createProductDto;
 
@@ -34,12 +33,9 @@ export class ProductsRepository extends Repository<Product> {
     }
   }
 
-  async findUserProducts(user: User, paginationDto: PaginationDto, filterDto: FilterProductDto) {
-    const { limit, page, skip } = paginationSolver(paginationDto);
-    let { search } = filterDto;
-
+  async findUserProducts(user: User, { limit, page, skip, search }) {
     const query = this.createQueryBuilder(EntityName.Products)
-      .leftJoinAndSelect('products.seller', 'seller')
+      .leftJoin('products.seller', 'seller')
       .where('seller.userId = :userId', { userId: user.id });
 
     if (search) query.andWhere('products.name LIKE :search', { search: `%${search}%` });
@@ -53,6 +49,48 @@ export class ProductsRepository extends Repository<Product> {
     return {
       pagination: paginationGenerator(count, page, limit),
       products,
+    };
+  }
+  async findUserProductsReport(user: User, { limit, page, skip, search, type }) {
+    const oneMonthAgo = getPreviousMonthDate(1);
+
+    const baseQuery = this.createQueryBuilder(EntityName.Products)
+      .leftJoin('products.seller', 'seller')
+      .leftJoin('products.transactions', 'transactions')
+      .where('seller.userId = :userId', { userId: user.id });
+
+    if (search) baseQuery.andWhere('products.name LIKE :search', { search: `%${search}%` });
+
+    baseQuery
+      .addSelect(
+        'CAST(COALESCE(SUM(CASE WHEN transactions.type = :type THEN transactions.quantity ELSE 0 END), 0) AS INTEGER)',
+        'totalQuantity',
+      )
+      .addSelect(
+        'CAST(COALESCE(SUM(CASE WHEN transactions.type = :type AND transactions.created_at >= :oneMonthAgo THEN transactions.quantity ELSE 0 END), 0) AS INTEGER)',
+        'lastMonthQuantity',
+      )
+      .setParameter('oneMonthAgo', oneMonthAgo)
+      .setParameter('type', type)
+      .groupBy('products.id')
+      .addGroupBy('seller.id')
+      .orderBy('products.updated_at', 'DESC');
+
+    // Clone baseQuery for count calculation
+    const countQuery = baseQuery.clone();
+
+    const products = await baseQuery.offset(skip).limit(limit).getRawAndEntities();
+
+    // Count all records (without limit and skip)
+    const count = await countQuery.getCount();
+
+    return {
+      pagination: paginationGenerator(count, page, limit),
+      products: products.entities.map((product, index) => ({
+        ...product,
+        totalQuantity: products.raw[index]?.totalQuantity || 0,
+        lastMonthQuantity: products.raw[index]?.lastMonthQuantity || 0,
+      })),
     };
   }
 

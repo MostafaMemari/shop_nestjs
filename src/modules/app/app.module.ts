@@ -20,7 +20,7 @@ import { SaveProductModule } from '../save-product/save-product.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `.env.${process.env.NODE_ENV}`,
+      envFilePath: process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env',
       validationSchema: envValidationSchema,
     }),
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
