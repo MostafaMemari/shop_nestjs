@@ -33,12 +33,17 @@ export class ProductRepository extends Repository<Product> {
     }
   }
 
-  async findUserProducts(user: User, { limit, page, skip, search }) {
+  async findUserProducts(user: User, { limit, page, skip, search, colorId, categoryId, sellerId }) {
     const query = this.createQueryBuilder(EntityName.Products)
       .leftJoin('products.seller', 'seller')
+      .leftJoin('products.category', 'category')
+      .leftJoin('products.color', 'color')
       .where('seller.userId = :userId', { userId: user.id });
 
     if (search) query.andWhere('products.name LIKE :search', { search: `%${search}%` });
+    if (colorId) query.andWhere('products.colorId = :colorId', { colorId });
+    if (categoryId) query.andWhere('products.categoryId = :categoryId', { categoryId });
+    if (sellerId) query.andWhere('seller.id = :sellerId', { sellerId });
 
     const [products, count] = await query
       .orderBy('products.updated_at', 'DESC')
@@ -51,6 +56,7 @@ export class ProductRepository extends Repository<Product> {
       products,
     };
   }
+
   async findUserProductsSetting(user: User, { limit, page, skip, search }) {
     const query = this.createQueryBuilder(EntityName.Products)
       .leftJoin('products.seller', 'seller')
@@ -74,17 +80,28 @@ export class ProductRepository extends Repository<Product> {
     };
   }
 
-  async findUserProductsReport(user: User, { limit, page, skip, search, type }) {
+  async findUserProductsReport(
+    user: User,
+    { limit, page, skip, search, type, colorId, categoryId, sellerId, quantityMin, quantityMax, quantityOrder },
+  ) {
     const oneMonthAgo = getPreviousMonthDate(1);
 
-    const baseQuery = this.createQueryBuilder(EntityName.Products)
+    const query = this.createQueryBuilder(EntityName.Products)
       .leftJoin('products.seller', 'seller')
       .leftJoin('products.transactions', 'transactions')
-      .where('seller.userId = :userId', { userId: user.id });
+      .where('seller.userId = :userId', { userId: user.id })
+      .orderBy('products.updated_at', 'DESC');
 
-    if (search) baseQuery.andWhere('products.name LIKE :search', { search: `%${search}%` });
+    if (search) query.andWhere('products.name LIKE :search', { search: `%${search}%` });
+    if (search) query.andWhere('products.name LIKE :search', { search: `%${search}%` });
+    if (colorId) query.andWhere('products.colorId = :colorId', { colorId });
+    if (categoryId) query.andWhere('products.categoryId = :categoryId', { categoryId });
+    if (sellerId) query.andWhere('seller.id = :sellerId', { sellerId });
+    if (quantityMin) query.andWhere('products.quantity >= :quantityMin', { quantityMin });
+    if (quantityMax) query.andWhere('products.quantity <= :quantityMax', { quantityMax });
+    if (quantityOrder) query.orderBy('products.quantity', quantityOrder === 'asc' ? 'ASC' : 'DESC');
 
-    baseQuery
+    query
       .addSelect(
         'CAST(COALESCE(SUM(CASE WHEN transactions.type = :type THEN transactions.quantity ELSE 0 END), 0) AS INTEGER)',
         'totalQuantity',
@@ -96,12 +113,11 @@ export class ProductRepository extends Repository<Product> {
       .setParameter('oneMonthAgo', oneMonthAgo)
       .setParameter('type', type)
       .groupBy('products.id')
-      .addGroupBy('seller.id')
-      .orderBy('products.updated_at', 'DESC');
+      .addGroupBy('seller.id');
 
-    const countQuery = baseQuery.clone();
+    const countQuery = query.clone();
 
-    const products = await baseQuery.offset(skip).limit(limit).getRawAndEntities();
+    const products = await query.offset(skip).limit(limit).getRawAndEntities();
 
     const count = await countQuery.getCount();
 

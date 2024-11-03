@@ -47,9 +47,17 @@ export class ProductsService {
 
   async findAll(user: User, filterDto: FilterProductDto, paginationDto: PaginationDto) {
     const { limit, page, skip } = paginationSolver(paginationDto);
-    const { search } = filterDto;
+    const { search, colorId, categoryId, sellerId } = filterDto;
 
-    return await this.productRepository.findUserProducts(user, { limit, page, skip, search });
+    return await this.productRepository.findUserProducts(user, {
+      limit,
+      page,
+      skip,
+      search,
+      colorId,
+      categoryId,
+      sellerId,
+    });
   }
   async findAllSetting(user: User, filterDto: FilterProductDto, paginationDto: PaginationDto) {
     const { limit, page, skip } = paginationSolver(paginationDto);
@@ -64,9 +72,21 @@ export class ProductsService {
     paginationDto: PaginationDto,
   ) {
     const { limit, page, skip } = paginationSolver(paginationDto);
-    const { search } = filterDto;
+    const { search, colorId, categoryId, sellerId, quantityMin, quantityMax, quantityOrder } = filterDto;
 
-    return await this.productRepository.findUserProductsReport(user, { limit, page, skip, search, type });
+    return await this.productRepository.findUserProductsReport(user, {
+      limit,
+      page,
+      skip,
+      search,
+      type,
+      colorId,
+      categoryId,
+      sellerId,
+      quantityMin,
+      quantityMax,
+      quantityOrder,
+    });
   }
 
   async findOneById(id: number, user: User) {
