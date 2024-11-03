@@ -2,7 +2,7 @@ import * as Joi from '@hapi/joi';
 
 export const envValidationSchema = Joi.object({
   // Application
-  NODE_ENV: Joi.string().valid('development', 'production', 'production.local').default('development'),
+  NODE_ENV: Joi.string().valid('development', 'production', 'production.local', 'aiven').default('development'),
   PORT: Joi.number().default(3500),
 
   // Database

@@ -77,6 +77,13 @@ export class ProductsController {
     return this.productsService.findAll(user, filterDto, paginationDto);
   }
 
+  @Get('/setting')
+  @Pagination()
+  @FilterProduct()
+  @ApiParam({ name: 'type', enum: TransactionType })
+  findAllSetting(@GetUser() user: User, @Query() paginationDto: PaginationDto, @Query() filterDto: FilterProductDto) {
+    return this.productsService.findAllSetting(user, filterDto, paginationDto);
+  }
   @Get(':type')
   @Pagination()
   @FilterProduct()

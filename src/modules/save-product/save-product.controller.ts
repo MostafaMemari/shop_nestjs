@@ -16,9 +16,20 @@ export class SaveProductController {
   @Get('create-products')
   async createProductsByJson(@GetUser() user: User) {
     try {
-      const filePath = `${process.cwd()}/src/modules/products/product-management.products.json`;
+      const filePath = `${process.cwd()}/src/modules/save-product/product-management.products.json`;
       const products = await readFileAsync(filePath, 'utf-8');
       return this.saveProductService.createProductsByJson(user, JSON.parse(products));
+    } catch (error) {
+      console.error('Error reading the products file:', error);
+      throw new InternalServerErrorException('Could not read products file.');
+    }
+  }
+  @Get('update-products')
+  async updateProductsByJson(@GetUser() user: User) {
+    try {
+      const filePath = `${process.cwd()}/src/modules/save-product/product-management.products.json`;
+      const products = await readFileAsync(filePath, 'utf-8');
+      return this.saveProductService.updateProductsByJson(user, JSON.parse(products));
     } catch (error) {
       console.error('Error reading the products file:', error);
       throw new InternalServerErrorException('Could not read products file.');
@@ -28,6 +39,24 @@ export class SaveProductController {
   async createProductApiDigiKala(@GetUser() user: User) {
     try {
       return this.saveProductService.createProductApiDigiKala(user);
+    } catch (error) {
+      console.error('Error reading the products file:', error);
+      throw new InternalServerErrorException('Could not read products file.');
+    }
+  }
+  @Get('update-products-api')
+  async updateProductApiDigiKala(@GetUser() user: User) {
+    try {
+      return this.saveProductService.updateProductApiDigiKala(user);
+    } catch (error) {
+      console.error('Error reading the products file:', error);
+      throw new InternalServerErrorException('Could not read products file.');
+    }
+  }
+  @Get('update-colors-api')
+  async updateProductColorApiDigiKala(@GetUser() user: User) {
+    try {
+      return this.saveProductService.updateProductColorApiDigiKala();
     } catch (error) {
       console.error('Error reading the products file:', error);
       throw new InternalServerErrorException('Could not read products file.');

@@ -16,8 +16,8 @@ export const typeOrmConfig = (configService: ConfigService): TypeOrmModuleOption
     database: configService.get<string>('DB_NAME'),
     autoLoadEntities: true,
     synchronize: isSynchronizeEnabled,
-    ssl: isProduction && isSslEnabled,
-    extra: isProduction && isSslEnabled ? { ssl: { rejectUnauthorized: false } } : null,
+    ssl: (isProduction && isSslEnabled) || (!isProduction && isSslEnabled) ? { rejectUnauthorized: false } : null,
+    // extra: isProduction || isSslEnabled ? { ssl: { rejectUnauthorized: false } } : null,
   };
 };
 

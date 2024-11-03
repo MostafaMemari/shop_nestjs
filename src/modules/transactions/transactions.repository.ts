@@ -88,7 +88,7 @@ export class TransactionRepository extends Repository<Transaction> {
       .addSelect(['product.name', 'product.image']);
 
     const [products, count] = await query
-      .orderBy('transaction.createdAt', 'DESC')
+      .orderBy('transaction.created_at', 'DESC')
       .skip(skip)
       .take(limit)
       .getManyAndCount();

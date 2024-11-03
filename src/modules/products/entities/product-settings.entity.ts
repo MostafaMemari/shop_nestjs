@@ -5,10 +5,10 @@ import { Product } from './product.entity';
 
 @Entity(EntityName.ProductSettings)
 export class ProductSettings extends BaseEntity {
-  @Column({ type: 'integer', default: 0 })
+  @Column({ type: 'integer', nullable: true })
   reduce_price: number;
 
-  @Column({ type: 'integer', default: 0 })
+  @Column({ type: 'integer', nullable: true })
   min_price: number;
 
   @Column({ type: 'boolean', default: false })

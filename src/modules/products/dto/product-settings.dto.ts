@@ -17,16 +17,19 @@ export class productSettingsDto {
   @ApiPropertyOptional({ type: 'integer', example: 100000 })
   min_price: number;
 
+  @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => (value === 'true' ? true : value === 'false' ? false : value))
   @ApiPropertyOptional()
   is_active: boolean;
 
+  @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => (value === 'true' ? true : value === 'false' ? false : value))
   @ApiPropertyOptional()
   is_buyBox: boolean;
 
+  @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => (value === 'true' ? true : value === 'false' ? false : value))
   @ApiPropertyOptional()

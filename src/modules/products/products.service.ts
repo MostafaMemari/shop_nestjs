@@ -51,6 +51,12 @@ export class ProductsService {
 
     return await this.productRepository.findUserProducts(user, { limit, page, skip, search });
   }
+  async findAllSetting(user: User, filterDto: FilterProductDto, paginationDto: PaginationDto) {
+    const { limit, page, skip } = paginationSolver(paginationDto);
+    const { search } = filterDto;
+
+    return this.productRepository.findUserProductsSetting(user, { limit, page, skip, search });
+  }
   async findAllByTransactionType(
     user: User,
     type: TransactionType,

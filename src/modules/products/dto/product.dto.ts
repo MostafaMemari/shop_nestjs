@@ -74,6 +74,11 @@ export class CreateProductDto {
   @ApiPropertyOptional()
   status: boolean;
 
+  @IsBoolean()
+  @Transform(({ value }) => (value === 'true' ? true : value === 'false' ? false : value))
+  @ApiPropertyOptional()
+  is_robot: boolean;
+
   @Transform(({ value }) => parseInt(value, 10))
   @IsInt()
   @IsPositive()

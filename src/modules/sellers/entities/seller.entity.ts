@@ -9,6 +9,9 @@ export class Seller extends BaseEntity {
   @Column({ type: 'varchar' })
   name: string;
 
+  @Column({ type: 'integer' })
+  seller_id: number;
+
   @Column({ type: 'varchar', nullable: true })
   email: string;
 

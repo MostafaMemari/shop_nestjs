@@ -40,10 +40,26 @@ export class Product extends BaseEntity {
   @Column({ type: 'boolean', default: false })
   isMultiProduct: boolean;
 
-  @Column({ type: 'numeric', nullable: true })
+  @Column('decimal', {
+    precision: 5,
+    scale: 1,
+    nullable: true,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => (value ? parseFloat(value) : null),
+    },
+  })
   height: number | null;
 
-  @Column({ type: 'numeric', nullable: true })
+  @Column('decimal', {
+    precision: 5,
+    scale: 1,
+    nullable: true,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => (value ? parseFloat(value) : null),
+    },
+  })
   width: number | null;
 
   @Column({ type: 'integer' })
@@ -63,6 +79,9 @@ export class Product extends BaseEntity {
 
   @Column({ type: 'boolean', default: true })
   status: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  is_robot: boolean;
 
   @ManyToOne(() => Seller, (seller) => seller.products, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn()

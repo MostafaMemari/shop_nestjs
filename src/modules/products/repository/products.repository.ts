@@ -51,6 +51,29 @@ export class ProductRepository extends Repository<Product> {
       products,
     };
   }
+  async findUserProductsSetting(user: User, { limit, page, skip, search }) {
+    const query = this.createQueryBuilder(EntityName.Products)
+      .leftJoin('products.seller', 'seller')
+      .leftJoinAndSelect('products.product_settings', 'product_settings')
+      .where('seller.userId = :userId', { userId: user.id })
+      .andWhere('is_robot = :isRobot', { isRobot: true });
+
+    if (search) query.andWhere('products.name LIKE :search', { search: `%${search}%` });
+
+    const [products, count] = await query
+      .orderBy('product_settings.is_active', 'DESC')
+      .addOrderBy('product_settings.updated_at', 'DESC')
+      .addOrderBy('products.updated_at', 'DESC')
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount();
+
+    return {
+      pagination: paginationGenerator(count, page, limit),
+      products,
+    };
+  }
+
   async findUserProductsReport(user: User, { limit, page, skip, search, type }) {
     const oneMonthAgo = getPreviousMonthDate(1);
 
@@ -76,12 +99,10 @@ export class ProductRepository extends Repository<Product> {
       .addGroupBy('seller.id')
       .orderBy('products.updated_at', 'DESC');
 
-    // Clone baseQuery for count calculation
     const countQuery = baseQuery.clone();
 
     const products = await baseQuery.offset(skip).limit(limit).getRawAndEntities();
 
-    // Count all records (without limit and skip)
     const count = await countQuery.getCount();
 
     return {

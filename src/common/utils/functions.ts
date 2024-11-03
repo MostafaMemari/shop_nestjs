@@ -29,3 +29,7 @@ export function getPreviousMonthDate(monthsAgo: number) {
   const today = new Date();
   return new Date(today.getFullYear(), today.getMonth() - monthsAgo, today.getDate());
 }
+
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
