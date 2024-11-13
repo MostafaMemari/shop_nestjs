@@ -22,7 +22,7 @@ import { CreateProductDto, FilterProductDto, UpdateProductDto } from './dto/prod
 import { SwaggerConsumes } from 'src/common/enums/swagger-consumes.enum';
 import { ValidateIdsPipe } from './pipe/validate-ids.pipe';
 import { AuthDecorator } from 'src/common/decorators/auth.decorator';
-import { productSettingsDto } from './dto/product-settings.dto';
+import { productSettingsDto } from './dto/settings-product.dto';
 import { ApiConsumes, ApiParam, ApiTags } from '@nestjs/swagger';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { User } from '../users/entities/user.entity';
@@ -57,7 +57,8 @@ export class ProductsController {
     )
     image: Express.Multer.File,
   ) {
-    return this.productsService.create(user, createProductDto, image);
+    // return this.productsService.create(user, createProductDto, image);
+    return this.productsService.createProduct(user, createProductDto, image);
   }
 
   @Patch('/:id/settings')

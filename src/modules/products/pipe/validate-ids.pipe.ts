@@ -6,6 +6,7 @@ import { CategoriesService } from 'src/modules/categories/categories.service';
 import { ColorsService } from 'src/modules/colors/colors.service';
 import { SellerService } from 'src/modules/sellers/sellers.service';
 import { EntityNotFoundError } from 'typeorm';
+import { ProductsService } from '../products.service';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ValidateIdsPipe implements PipeTransform {
@@ -13,7 +14,8 @@ export class ValidateIdsPipe implements PipeTransform {
     private readonly colorService: ColorsService,
     private readonly categoriesService: CategoriesService,
     private readonly sellerService: SellerService,
-    @Inject(REQUEST) private readonly request: Request,
+    private readonly productService: ProductsService,
+    @Inject(REQUEST) private readonly req: Request,
   ) {}
 
   async transform(value: any) {
@@ -21,11 +23,13 @@ export class ValidateIdsPipe implements PipeTransform {
       return value;
     }
 
-    const { colorId, categoryId, sellerId } = value;
+    const { colorId, categoryId, sellerId, parentProductId } = value;
+
     try {
+      if (parentProductId) await this.productService.findOneById(parentProductId, this.req.user);
       if (colorId) await this.colorService.findOneById(colorId);
       if (categoryId) await this.categoriesService.findOneById(categoryId);
-      if (sellerId) await this.sellerService.findOneById(sellerId, this.request.user);
+      if (sellerId) await this.sellerService.findOneById(sellerId, this.req.user);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         throw new NotFoundException(formatErrorMessage(error.message));

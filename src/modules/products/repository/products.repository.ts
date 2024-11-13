@@ -1,18 +1,39 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { DataSource, In, Repository } from 'typeorm';
 import { Product } from '../entities/product.entity';
 
 import { CreateProductDto, FilterProductDto } from '../dto/product.dto';
 import { User } from '../../users/entities/user.entity';
 import { EntityName } from 'src/common/enums/entity.enum';
-import { paginationGenerator } from 'src/common/utils/pagination.util';
+import { paginationGenerator, paginationSolver } from 'src/common/utils/pagination.util';
 import { getPreviousMonthDate } from 'src/common/utils/functions';
+import { TransactionType } from 'aws-sdk/clients/lakeformation';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 @Injectable()
 export class ProductRepository extends Repository<Product> {
   constructor(private readonly dataSource: DataSource) {
     super(Product, dataSource.createEntityManager());
   }
+  async createAndSaveProduct(
+    createProductDto: CreateProductDto,
+    imageLocation: string,
+    imageKey: string,
+  ): Promise<Product> {
+    const { sellerId, colorId, categoryId } = createProductDto;
+
+    const product = this.create({
+      ...createProductDto,
+      seller: { id: sellerId },
+      color: { id: colorId },
+      category: { id: categoryId },
+      image: imageLocation,
+      image_key: imageKey,
+    });
+
+    return this.save(product);
+  }
+
   async createProduct(createProductDto: CreateProductDto, imageDetails: { Location: string; Key: string }) {
     const { sellerId, colorId, categoryId } = createProductDto;
 
@@ -82,8 +103,13 @@ export class ProductRepository extends Repository<Product> {
 
   async findUserProductsReport(
     user: User,
-    { limit, page, skip, search, type, colorId, categoryId, sellerId, quantityMin, quantityMax, quantityOrder },
+    type: TransactionType,
+    filterDto: FilterProductDto,
+    paginationDto: PaginationDto,
   ) {
+    const { limit, page, skip } = paginationSolver(paginationDto);
+    const { search, colorId, categoryId, sellerId, quantityMin, quantityMax, quantityOrder } = filterDto;
+
     const oneMonthAgo = getPreviousMonthDate(1);
 
     const query = this.createQueryBuilder(EntityName.Products)
@@ -145,5 +171,13 @@ export class ProductRepository extends Repository<Product> {
       .leftJoinAndSelect('products.product_settings', 'product_settings')
       .andWhere('seller.userId = :userId', { userId: user.id })
       .getOne();
+  }
+
+  async findChildProductById(childProductId: number): Promise<Product | null> {
+    return this.findOne({ where: { id: childProductId } });
+  }
+
+  async findDependentProductById(dependentProductId: number): Promise<Product | null> {
+    return this.findOne({ where: { id: dependentProductId } });
   }
 }

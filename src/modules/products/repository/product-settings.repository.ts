@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { ProductSettings } from '../entities/product-settings.entity';
-import { productSettingsDto } from '../dto/product-settings.dto';
+import { ProductSettings } from '../entities/settings-product.entity';
+import { productSettingsDto } from '../dto/settings-product.dto';
 import { Product } from '../entities/product.entity';
 
 @Injectable()

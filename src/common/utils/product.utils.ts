@@ -5,11 +5,11 @@ import { Product } from 'src/modules/products/entities/product.entity';
 
 export function adjustProductQuantity(product: Product, quantity: number, type: TransactionType) {
   if (type === TransactionType.DAMAGE || type === TransactionType.SALE || type === TransactionType.DEPO) {
-    if (product.quantity < quantity) {
+    if (product.stock < quantity) {
       throw new BadRequestException(ProductsMessage.SaleExceedsStock);
     }
-    product.quantity -= quantity;
+    product.stock -= quantity;
   } else if (type === TransactionType.PURCHASE) {
-    product.quantity += quantity;
+    product.stock += quantity;
   }
 }

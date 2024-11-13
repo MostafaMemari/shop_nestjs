@@ -36,7 +36,7 @@ export class TransactionRepository extends Repository<Transaction> {
       .addSelect('product.name', 'name')
       .addSelect('product.image', 'image')
       .addSelect('product.dkp', 'dkp')
-      .addSelect('product.quantity', 'quantity')
+      .addSelect('product.stock', 'quantity')
       .addSelect('product.updated_at', 'updated_at')
       .addSelect(
         'CAST(COALESCE(SUM(CASE WHEN transaction.created_at >= :oneMonthAgo THEN transaction.quantity ELSE 0 END), 0) AS INTEGER)',
