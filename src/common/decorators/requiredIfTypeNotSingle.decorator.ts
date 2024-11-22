@@ -11,7 +11,6 @@ export function IsRequiredIfTypeNotSingle(validationOptions?: ValidationOptions)
       validator: {
         validate(value: any, args: ValidationArguments) {
           const object = args.object as any;
-          // بررسی اینکه اگر type برابر SINGLE نباشد، relatedProducts باید مقدار داشته باشد
           if (object.type !== ProductType.SINGLE && (!value || value.length === 0)) {
             return false;
           }

@@ -59,8 +59,12 @@ export class ProductRepository extends Repository<Product> {
       .leftJoin('products.seller', 'seller')
       .leftJoin('products.category', 'category')
       .leftJoin('products.color', 'color')
+      .leftJoinAndSelect('products.relatedProducts', 'relatedProducts')
+      .leftJoinAndSelect('relatedProducts.childProduct', 'childProduct')
+      .addSelect(['childProduct.id', 'childProduct.name', 'childProduct.image', 'childProduct.image_key'])
       .where('seller.userId = :userId', { userId: user.id });
 
+    // اعمال فیلترها
     if (search) query.andWhere('products.name LIKE :search', { search: `%${search}%` });
     if (colorId) query.andWhere('products.colorId = :colorId', { colorId });
     if (categoryId) query.andWhere('products.categoryId = :categoryId', { categoryId });
@@ -72,9 +76,19 @@ export class ProductRepository extends Repository<Product> {
       .take(limit)
       .getManyAndCount();
 
+    const formattedProducts = products.map((product) => ({
+      ...product,
+      relatedProducts: product.relatedProducts.map((rp) => ({
+        childProductId: rp.childProduct.id,
+        quantity: rp.quantity,
+        name: rp.childProduct.name,
+        image: rp.childProduct.image,
+      })),
+    }));
+
     return {
       pagination: paginationGenerator(count, page, limit),
-      products,
+      products: formattedProducts,
     };
   }
 

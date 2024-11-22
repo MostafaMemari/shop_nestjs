@@ -1,6 +1,5 @@
-import { Injectable, PipeTransform, BadRequestException } from '@nestjs/common';
+import { PipeTransform, BadRequestException } from '@nestjs/common';
 
-@Injectable()
 export class ParseJsonPipe implements PipeTransform {
   transform(value: any): any {
     if (Array.isArray(value)) {
@@ -24,11 +23,17 @@ export class ParseJsonPipe implements PipeTransform {
               return item;
             })
             .filter((item) => item !== null);
-        } else {
-          throw new BadRequestException('Expected an array of JSON strings');
         }
       } catch (error) {
-        throw new BadRequestException('Invalid JSON format');
+        try {
+          let parsedObject = JSON.parse(`[${value}]`);
+
+          console.log(parsedObject);
+
+          return parsedObject;
+        } catch (e) {
+          throw new BadRequestException('Invalid JSON format');
+        }
       }
     }
 

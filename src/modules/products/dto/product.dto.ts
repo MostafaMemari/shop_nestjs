@@ -76,12 +76,12 @@ export class CreateProductDto {
   @ApiProperty({ type: 'integer', example: '' })
   dkpc: number;
 
-  @IsBoolean()
+  // @IsBoolean()
   @Transform(({ value }) => (value === 'true' ? true : value === 'false' ? false : value))
   @ApiPropertyOptional()
   status: boolean;
 
-  @IsBoolean()
+  // @IsBoolean()
   @Transform(({ value }) => (value === 'true' ? true : value === 'false' ? false : value))
   @ApiPropertyOptional()
   is_robot: boolean;

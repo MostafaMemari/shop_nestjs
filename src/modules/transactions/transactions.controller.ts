@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, ParseEnumPipe } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto, TransactionTypeDto, UpdateTransactionDto } from './dto/transaction.dto';
 import { GetUser } from '../auth/decorators/get-user.decorator';
@@ -17,14 +17,17 @@ import { FilterProductDto } from '../products/dto/product.dto';
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
-  @Post('/product/:id')
+  @Post('/product/:id/:type')
+  @ApiParam({ name: 'type', enum: TransactionType })
   @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
   create(
     @Param('id', ParseIntPipe) productId: string,
-    @Body() createTransactionDto: CreateTransactionDto,
+    @Param('type') type: TransactionType,
+    @Body()
+    createTransactionDto: CreateTransactionDto,
     @GetUser() user: User,
   ) {
-    return this.transactionsService.create(+productId, createTransactionDto, user);
+    return this.transactionsService.create(+productId, type, createTransactionDto, user);
   }
 
   @Get('/report/:type')

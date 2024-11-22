@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConsoleLogger,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProductDto, FilterProductDto, UpdateProductDto } from './dto/product.dto';
 import { ProductsMessage } from 'src/common/enums/messages.enum';
 import { User } from '../users/entities/user.entity';
@@ -12,9 +18,10 @@ import { ProductRepository } from './repository/products.repository';
 import { TransactionType } from '../transactions/enum/transaction-type.enum';
 import { Product } from './entities/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import { ProductType } from './enum/productType.enum';
 import { RelatedProduct } from './entities/related-product.entity';
+import { RelatedProductDto } from './dto/related-product.dto';
 
 @Injectable()
 export class ProductsService {
@@ -31,7 +38,7 @@ export class ProductsService {
   async createProduct(user: User, createProductDto: CreateProductDto, image: Express.Multer.File): Promise<string> {
     const { sellerId, colorId, categoryId, type, relatedProducts } = createProductDto;
 
-    await this.sellerService.findOneById(sellerId, user);
+    // await this.sellerService.findOneById(sellerId, user);
 
     const { Location, Key } = await this.awsService.uploadFile(image, 'product');
 
@@ -51,24 +58,7 @@ export class ProductsService {
       await queryRunner.manager.save(product);
 
       if (type !== ProductType.SINGLE) {
-        if (!relatedProducts || relatedProducts.length === 0) {
-          throw new BadRequestException('Combination products require child products');
-        }
-        for (const relatedProduct of relatedProducts) {
-          const childProduct = await this.productRepository.findOne({
-            where: { id: relatedProduct.childProductId },
-          });
-          if (!childProduct) {
-            throw new BadRequestException(`Child product with ID ${relatedProduct.childProductId} not found`);
-          }
-
-          const combination = this.relatedProductRepository.create({
-            parentProduct: product,
-            childProduct,
-            quantity: relatedProduct.quantity,
-          });
-          await queryRunner.manager.save(combination);
-        }
+        await this.handleCombinationProducts(queryRunner, product, relatedProducts);
       }
 
       await queryRunner.commitTransaction();
@@ -83,9 +73,9 @@ export class ProductsService {
   }
 
   async create(user: User, createProductDto: CreateProductDto, image: Express.Multer.File): Promise<string> {
-    const { sellerId } = createProductDto;
+    // const { sellerId } = createProductDto;
 
-    await this.sellerService.findOneById(sellerId, user);
+    // await this.sellerService.findOneById(sellerId, user);
 
     const { Location, Key } = await this.awsService.uploadFile(image, 'product');
 
@@ -142,27 +132,59 @@ export class ProductsService {
     return product;
   }
 
-  async update(id: number, user: User, updateProductDto: UpdateProductDto, image: Express.Multer.File) {
-    let { sellerId } = updateProductDto;
+  async update(
+    id: number,
+    user: User,
+    updateProductDto: UpdateProductDto,
+    image: Express.Multer.File,
+  ): Promise<{ message: string }> {
+    const { type, relatedProducts, sellerId, colorId, categoryId, ...resDto } = updateProductDto;
 
-    //* Validate seller
-    if (sellerId) {
-      await this.sellerService.findOneById(sellerId, user);
-    }
+    const queryRunner = this.productRepository.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    //* Find Product
     const product = await this.findOneById(id, user);
 
-    // const updateData: Partial<Product> = {
-    //   ...updateProductDto,
-    // };
+    let imageLocation = product?.image;
+    let imageKey = product?.image_key;
+    try {
+      if (image) {
+        if (product.image) {
+          await this.awsService.deleteFile(product.image);
+        }
+        const uploadImageResult = await this.awsService.uploadFile(image, 'product');
+        imageLocation = uploadImageResult.Location;
+        imageKey = uploadImageResult.Key;
+      }
 
-    // this.productRepository.merge(product, updateData);
-    // await this.productRepository.save(product);
+      const updatedProduct = this.productRepository.merge(product, {
+        ...resDto,
+        seller: { id: sellerId },
+        color: { id: colorId },
+        category: { id: categoryId },
+        image: imageLocation || product?.image,
+        image_key: imageKey || product?.image_key,
+        type,
+      });
 
-    return {
-      message: ProductsMessage.UpdatedProductSuccess,
-    };
+      await this.updateCombinationProducts(queryRunner, updatedProduct, relatedProducts, type);
+
+      await queryRunner.manager.save(updatedProduct);
+
+      await queryRunner.commitTransaction();
+      return { message: ProductsMessage.UpdatedProductSuccess };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+
+      if (image) {
+        await this.awsService.deleteFile(product.image);
+      }
+
+      throw new InternalServerErrorException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async remove(id: number, user: User) {
@@ -178,5 +200,102 @@ export class ProductsService {
     const product = await this.productRepository.findOneByIdAndRelationSetting(id, user);
     if (!product) throw new NotFoundException(ProductsMessage.NotFoundProduct);
     return product;
+  }
+
+  private async handleCombinationProducts(
+    queryRunner: QueryRunner,
+    parentProduct: Product,
+    relatedProducts: RelatedProductDto[],
+  ) {
+    if (!relatedProducts || relatedProducts.length === 0) {
+      throw new BadRequestException('Combination products require child products');
+    }
+
+    for (const relatedProduct of relatedProducts) {
+      const childProduct = await this.productRepository.findOne({
+        where: { id: relatedProduct.childProductId },
+      });
+      if (!childProduct) {
+        throw new BadRequestException(`Child product with ID ${relatedProduct.childProductId} not found`);
+      }
+
+      const combination = this.relatedProductRepository.create({
+        parentProduct,
+        childProduct,
+        quantity: relatedProduct.quantity,
+      });
+      await queryRunner.manager.save(combination);
+    }
+  }
+
+  private async updateCombinationProducts(
+    queryRunner: QueryRunner,
+    parentProduct: Product,
+    relatedProducts: RelatedProductDto[] | null,
+    type: ProductType,
+  ) {
+    if (type && type !== ProductType.SINGLE) {
+      if (!relatedProducts || relatedProducts.length === 0) {
+        throw new BadRequestException('Combination products require child products');
+      }
+    }
+
+    if (type && type === ProductType.SINGLE) {
+      const relatedProducts = await this.relatedProductRepository.find({
+        where: { parentProduct: { id: parentProduct.id } },
+      });
+      console.log(relatedProducts);
+      if (relatedProducts.length > 0) {
+        for (const relatedProduct of relatedProducts) {
+          await queryRunner.manager.remove(relatedProduct);
+        }
+      }
+      return;
+    }
+
+    if (relatedProducts) {
+      const existingCombinations = await this.relatedProductRepository.find({
+        where: { parentProduct: { id: parentProduct.id } },
+        relations: ['childProduct'],
+      });
+      const existingProductIds = existingCombinations.map((combination) => combination.childProduct.id);
+      const newProductIds = relatedProducts.map((relatedProduct) => relatedProduct.childProductId);
+      // حذف محصولات ترکیبی که دیگر در لیست جدید نیستند
+      const combinationsToRemove = existingCombinations.filter(
+        (combination) => !newProductIds.includes(combination.childProduct.id),
+      );
+      if (combinationsToRemove.length > 0) {
+        for (const combination of combinationsToRemove) {
+          await queryRunner.manager.remove(combination); // حذف کامل رکورد
+        }
+      }
+      // افزودن محصولات ترکیبی جدید
+      for (const relatedProduct of relatedProducts) {
+        if (!existingProductIds.includes(relatedProduct.childProductId)) {
+          const childProduct = await this.productRepository.findOne({
+            where: { id: relatedProduct.childProductId },
+          });
+          if (!childProduct) {
+            throw new BadRequestException(`Child product with ID ${relatedProduct.childProductId} not found`);
+          }
+          const newCombination = this.relatedProductRepository.create({
+            parentProduct,
+            childProduct,
+            quantity: relatedProduct.quantity,
+          });
+          await queryRunner.manager.save(newCombination);
+        }
+      }
+      // به‌روزرسانی مقادیر (مانند quantity) برای محصولات ترکیبی موجود
+      for (const relatedProduct of relatedProducts) {
+        const existingCombination = existingCombinations.find(
+          (combination) => combination.childProduct.id === relatedProduct.childProductId,
+        );
+        if (existingCombination) {
+          existingCombination.quantity = relatedProduct.quantity;
+          await queryRunner.manager.save(existingCombination);
+        }
+      }
+    }
   }
 }

@@ -6,7 +6,7 @@ import { User } from '../users/entities/user.entity';
 import { EntityName } from 'src/common/enums/entity.enum';
 import { paginationGenerator } from 'src/common/utils/pagination.util';
 import { getPreviousMonthDate } from 'src/common/utils/functions';
-import { TransactionType } from 'aws-sdk/clients/lakeformation';
+import { TransactionType } from './enum/transaction-type.enum';
 
 @Injectable()
 export class TransactionRepository extends Repository<Transaction> {
@@ -14,10 +14,16 @@ export class TransactionRepository extends Repository<Transaction> {
     super(Transaction, dataSource.createEntityManager());
   }
 
-  async createTransaction(productId: number, createTransactionDto: CreateTransactionDto, user: User) {
+  async createTransaction(
+    productId: number,
+    type: TransactionType,
+    createTransactionDto: CreateTransactionDto,
+    user: User,
+  ) {
     const transaction = this.create({
       productId,
       userId: user.id,
+      type,
       ...createTransactionDto,
     });
     try {
