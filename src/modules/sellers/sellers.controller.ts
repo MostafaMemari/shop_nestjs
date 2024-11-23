@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards, Put } from '@nestjs/common';
 import { SellerService } from './sellers.service';
 import { CreateSellerDto } from './dto/create-seller.dto';
 import { UpdateSellerDto } from './dto/update-seller.dto';
@@ -31,9 +31,10 @@ export class SellersController {
     return this.SellerService.findOneById(+id, user);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSellerDto: UpdateSellerDto) {
-    return this.SellerService.update(+id, updateSellerDto);
+  @Put(':id')
+  @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
+  update(@Param('id') id: string, @Body() updateSellerDto: UpdateSellerDto, @GetUser() user: User) {
+    return this.SellerService.update(+id, updateSellerDto, user);
   }
 
   @Delete(':id')

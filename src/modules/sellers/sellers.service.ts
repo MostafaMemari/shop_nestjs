@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSellerDto } from './dto/create-seller.dto';
 import { UpdateSellerDto } from './dto/update-seller.dto';
 import { SellersRepository } from './seller.repository';
@@ -28,8 +28,21 @@ export class SellerService {
     return seller;
   }
 
-  update(id: number, updateSellerDto: UpdateSellerDto) {
-    return `This action updates a #${id} seller`;
+  async update(id: number, updateSellerDto: UpdateSellerDto, user: User) {
+    const seller = await this.sellersRepository.findOne({ where: { id } });
+    if (!seller) {
+      throw new NotFoundException(`فروشنده با شناسه ${id} یافت نشد`);
+    }
+
+    // if (seller.user !== user) {
+    //   throw new ForbiddenException('شما اجازه به‌روزرسانی این فروشنده را ندارید');
+    // }
+
+    await this.sellersRepository.update(id, updateSellerDto);
+
+    return {
+      message: SellersMessage.UpdatedSellerSuccess,
+    };
   }
 
   async remove(id: number, user: User) {
