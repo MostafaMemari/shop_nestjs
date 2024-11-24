@@ -5,7 +5,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateProductDto, FilterProductDto, UpdateProductDto } from './dto/product.dto';
+import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 import { ProductsMessage } from 'src/common/enums/messages.enum';
 import { User } from '../users/entities/user.entity';
 import { productSettingsDto } from './dto/settings-product.dto';
@@ -22,6 +22,7 @@ import { QueryRunner, Repository } from 'typeorm';
 import { ProductType } from './enum/productType.enum';
 import { RelatedProduct } from './entities/related-product.entity';
 import { RelatedProductDto } from './dto/related-product.dto';
+import { FilterProductDto } from './dto/filter-product.dto';
 
 @Injectable()
 export class ProductsService {

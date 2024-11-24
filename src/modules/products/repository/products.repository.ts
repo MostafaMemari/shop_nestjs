@@ -2,13 +2,14 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { DataSource, In, Repository } from 'typeorm';
 import { Product } from '../entities/product.entity';
 
-import { CreateProductDto, FilterProductDto } from '../dto/product.dto';
+import { CreateProductDto } from '../dto/product.dto';
 import { User } from '../../users/entities/user.entity';
 import { EntityName } from 'src/common/enums/entity.enum';
 import { paginationGenerator, paginationSolver } from 'src/common/utils/pagination.util';
 import { getPreviousMonthDate } from 'src/common/utils/functions';
 import { TransactionType } from 'aws-sdk/clients/lakeformation';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { FilterProductDto } from '../dto/filter-product.dto';
 
 @Injectable()
 export class ProductRepository extends Repository<Product> {
@@ -122,7 +123,7 @@ export class ProductRepository extends Repository<Product> {
     paginationDto: PaginationDto,
   ) {
     const { limit, page, skip } = paginationSolver(paginationDto);
-    const { search, colorId, categoryId, sellerId, quantityMin, quantityMax, quantityOrder } = filterDto;
+    const { search, colorId, categoryId, sellerId, minStock, maxStock, sortOrder, updatedAt } = filterDto;
 
     const oneMonthAgo = getPreviousMonthDate(1);
 
@@ -130,16 +131,16 @@ export class ProductRepository extends Repository<Product> {
       .leftJoin('products.seller', 'seller')
       .leftJoin('products.transactions', 'transactions')
       .where('seller.userId = :userId', { userId: user.id })
-      .orderBy('products.updated_at', 'DESC');
+      .orderBy('products.updated_at', `${updatedAt ? updatedAt : 'DESC'}`);
 
     if (search) query.andWhere('products.name LIKE :search', { search: `%${search}%` });
     if (search) query.andWhere('products.name LIKE :search', { search: `%${search}%` });
     if (colorId) query.andWhere('products.colorId = :colorId', { colorId });
     if (categoryId) query.andWhere('products.categoryId = :categoryId', { categoryId });
     if (sellerId) query.andWhere('seller.id = :sellerId', { sellerId });
-    if (quantityMin) query.andWhere('products.quantity >= :quantityMin', { quantityMin });
-    if (quantityMax) query.andWhere('products.quantity <= :quantityMax', { quantityMax });
-    if (quantityOrder) query.orderBy('products.quantity', quantityOrder === 'asc' ? 'ASC' : 'DESC');
+    if (minStock) query.andWhere('products.stock >= :minStock', { minStock });
+    if (maxStock) query.andWhere('products.stock <= :maxStock', { maxStock });
+    if (sortOrder) query.orderBy('products.stock', sortOrder);
 
     query
       .addSelect(

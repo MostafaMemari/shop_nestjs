@@ -125,37 +125,6 @@ export class CreateProductDto {
   relatedProducts?: RelatedProductDto[];
 }
 
-export class FilterProductDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  search: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  categoryId: number;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  sellerId: number;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  colorId: number;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  quantityMin?: number;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  quantityMax?: number;
-
-  @ApiPropertyOptional({ enum: ['asc', 'desc'] })
-  @IsOptional()
-  @IsIn(['asc', 'desc'])
-  quantityOrder?: 'asc' | 'desc';
-}
-
 export class UpdateProductDto extends PartialType(CreateProductDto) {}
 
 // @ApiPropertyOptional({ isArray: true, type: Number, required: false })

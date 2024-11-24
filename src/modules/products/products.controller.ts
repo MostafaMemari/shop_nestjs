@@ -17,7 +17,7 @@ import {
   FileTypeValidator,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { CreateProductDto, FilterProductDto, UpdateProductDto } from './dto/product.dto';
+import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 
 import { SwaggerConsumes } from 'src/common/enums/swagger-consumes.enum';
 import { ValidateIdsPipe } from './pipe/validate-ids.pipe';
@@ -33,6 +33,7 @@ import { FilterProduct } from 'src/common/decorators/filter.decorator';
 import { UploadFileS3 } from 'src/common/interceptors/upload-file.interceptor';
 import { FileValidationPipe } from 'src/common/pipes/file-validation.pipe';
 import { TransactionType } from '../transactions/enum/transaction-type.enum';
+import { FilterProductDto } from './dto/filter-product.dto';
 
 @Controller('products')
 @ApiTags('Product')

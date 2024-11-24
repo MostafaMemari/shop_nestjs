@@ -8,9 +8,8 @@ import { adjustProductQuantity } from 'src/common/utils/product.utils';
 import { TransactionsMessage } from 'src/common/enums/messages.enum';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { paginationSolver } from 'src/common/utils/pagination.util';
-import { getPreviousMonthDate } from 'src/common/utils/functions';
-import { FilterProductDto } from '../products/dto/product.dto';
 import { TransactionType } from './enum/transaction-type.enum';
+import { FilterProductDto } from '../products/dto/filter-product.dto';
 
 @Injectable()
 export class TransactionsService {

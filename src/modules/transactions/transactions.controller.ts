@@ -9,7 +9,7 @@ import { SwaggerConsumes } from 'src/common/enums/swagger-consumes.enum';
 import { Pagination } from 'src/common/decorators/pagination.decorator';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { TransactionType } from './enum/transaction-type.enum';
-import { FilterProductDto } from '../products/dto/product.dto';
+import { FilterProductDto } from '../products/dto/filter-product.dto';
 
 @Controller('transactions')
 @ApiTags('Transactions')
