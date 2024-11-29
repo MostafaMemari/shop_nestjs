@@ -9,7 +9,6 @@ export class DigikalaService {
 
   constructor(private readonly httpService: HttpService) {}
 
-  // Method to get variants
   async getVariants(authToken: string, queryParams?: Record<string, string>): Promise<any> {
     try {
       const url = `${this.baseUrl}/variants/`;
@@ -33,7 +32,6 @@ export class DigikalaService {
     }
   }
 
-  // Method to update a variant
   async updateVariant(authToken: string, variantId: string, data: any): Promise<any> {
     try {
       const url = `${this.baseUrl}/variants/${variantId}/`;
@@ -53,7 +51,6 @@ export class DigikalaService {
     }
   }
 
-  // Method to get orders
   async getOrders(authToken: string, queryParams?: Record<string, string>): Promise<any> {
     try {
       const url = `${this.baseUrl}/orders/`;

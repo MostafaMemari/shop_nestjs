@@ -16,6 +16,8 @@ import { AwsSdkModule } from 'nest-aws-sdk';
 import { awsSdkConfigAsync } from 'src/config/aws.config';
 import { SaveProductModule } from '../save-product/save-product.module';
 import { CustomHttpModule } from '../http/http.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { RobotModule } from '../robot/robot.module';
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import { CustomHttpModule } from '../http/http.module';
     }),
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
     AwsSdkModule.forRootAsync(awsSdkConfigAsync),
+    ScheduleModule.forRoot(),
     AwsModule,
     CategoriesModule,
     AuthModule,
@@ -36,6 +39,7 @@ import { CustomHttpModule } from '../http/http.module';
     InvoiceModule,
     SaveProductModule,
     CustomHttpModule,
+    RobotModule,
   ],
   controllers: [],
   providers: [{ provide: APP_PIPE, useValue: new ValidationPipe({ whitelist: true }) }],
