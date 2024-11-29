@@ -15,6 +15,7 @@ import { AwsModule } from '../aws/aws.module';
 import { AwsSdkModule } from 'nest-aws-sdk';
 import { awsSdkConfigAsync } from 'src/config/aws.config';
 import { SaveProductModule } from '../save-product/save-product.module';
+import { CustomHttpModule } from '../http/http.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { SaveProductModule } from '../save-product/save-product.module';
     TransactionsModule,
     InvoiceModule,
     SaveProductModule,
+    CustomHttpModule,
   ],
   controllers: [],
   providers: [{ provide: APP_PIPE, useValue: new ValidationPipe({ whitelist: true }) }],
