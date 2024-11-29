@@ -16,6 +16,38 @@ export class ProductRepository extends Repository<Product> {
   constructor(private readonly dataSource: DataSource) {
     super(Product, dataSource.createEntityManager());
   }
+  async createProductWithTransaction(
+    createProductDto: CreateProductDto,
+    sellerId: number,
+    colorId: number,
+    categoryId: number,
+    image: { Location: string; Key: string },
+  ): Promise<Product> {
+    const queryRunner = this.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const product = this.create({
+        ...createProductDto,
+        seller: { id: sellerId },
+        color: { id: colorId },
+        category: { id: categoryId },
+        image: image.Location,
+        image_key: image.Key,
+      });
+      const savedProduct = await queryRunner.manager.save(product);
+
+      await queryRunner.commitTransaction();
+      return savedProduct;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
   async createAndSaveProduct(
     createProductDto: CreateProductDto,
     imageLocation: string,
@@ -103,9 +135,9 @@ export class ProductRepository extends Repository<Product> {
     if (search) query.andWhere('products.name LIKE :search', { search: `%${search}%` });
 
     const [products, count] = await query
-      .orderBy('product_settings.is_active', 'DESC')
+      .orderBy('product_settings.is_active', 'ASC')
       .addOrderBy('product_settings.updated_at', 'DESC')
-      .addOrderBy('products.updated_at', 'DESC')
+      // .addOrderBy('products.updated_at', 'DESC')
       .skip(skip)
       .take(limit)
       .getManyAndCount();

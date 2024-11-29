@@ -58,7 +58,6 @@ export class ProductsController {
     )
     image: Express.Multer.File,
   ) {
-    // return this.productsService.create(user, createProductDto, image);
     return this.productsService.createProduct(user, createProductDto, image);
   }
 
@@ -96,6 +95,7 @@ export class ProductsController {
     @Query() filterDto: FilterProductDto,
     @Param('type') type: TransactionType,
   ) {
+    console.log(new Date().toLocaleTimeString('fa-IR'));
     return this.productsService.findAllByTransactionType(user, type, filterDto, paginationDto);
   }
 

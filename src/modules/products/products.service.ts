@@ -39,7 +39,7 @@ export class ProductsService {
   async createProduct(user: User, createProductDto: CreateProductDto, image: Express.Multer.File): Promise<string> {
     const { sellerId, colorId, categoryId, type, relatedProducts } = createProductDto;
 
-    // await this.sellerService.findOneById(sellerId, user);
+    await this.sellerService.findOneById(sellerId, user);
 
     const { Location, Key } = await this.awsService.uploadFile(image, 'product');
 
@@ -73,21 +73,6 @@ export class ProductsService {
     }
   }
 
-  async create(user: User, createProductDto: CreateProductDto, image: Express.Multer.File): Promise<string> {
-    // const { sellerId } = createProductDto;
-
-    // await this.sellerService.findOneById(sellerId, user);
-
-    const { Location, Key } = await this.awsService.uploadFile(image, 'product');
-
-    try {
-      await this.productRepository.createProduct(createProductDto, { Location, Key });
-      return ProductsMessage.CreatedProductSuccess;
-    } catch (error) {
-      await this.awsService.deleteFile(Location);
-      throw new InternalServerErrorException(ProductsMessage.FailedCreateProduct);
-    }
-  }
   async createAndUpdateProductSettings(id: number, productSettingsDto: productSettingsDto, user: User) {
     const product = await this.findOneByIdAndRelationSetting(id, user);
     const isCreated = !product.product_settings;
