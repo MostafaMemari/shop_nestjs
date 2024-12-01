@@ -2,6 +2,7 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
+import { VariantsType } from './types/query.type';
 
 @Injectable()
 export class DigikalaService {
@@ -9,10 +10,9 @@ export class DigikalaService {
 
   constructor(private readonly httpService: HttpService) {}
 
-  async getVariants(authToken: string, queryParams?: Record<string, string>): Promise<any> {
+  async getVariants(authToken: string, queryParams?: VariantsType): Promise<any> {
     try {
       const url = `${this.baseUrl}/variants/`;
-      console.log(authToken);
 
       const response: AxiosResponse = await lastValueFrom(
         this.httpService.get(url, {
@@ -51,7 +51,7 @@ export class DigikalaService {
     }
   }
 
-  async getOrders(authToken: string, queryParams?: Record<string, string>): Promise<any> {
+  async getOrders(authToken: string, queryParams?: Record<string, any>): Promise<any> {
     try {
       const url = `${this.baseUrl}/orders/`;
 

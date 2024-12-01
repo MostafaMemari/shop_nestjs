@@ -1,10 +1,10 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   IsEmail,
   IsInt,
+  IsJWT,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsPhoneNumber,
   IsPositive,
@@ -36,4 +36,28 @@ export class CreateSellerDto {
   @IsOptional()
   @ApiPropertyOptional({ type: 'string', example: '' })
   phone: string;
+
+  @IsOptional()
+  @IsJWT()
+  @ApiPropertyOptional({ type: 'string', example: '' })
+  api_key: string;
+
+  @IsOptional()
+  @IsJWT()
+  @ApiPropertyOptional({ type: 'string', example: '' })
+  access_token: string;
+
+  @IsOptional()
+  @Transform(({ value }) => (value === 'true' ? true : value === 'false' ? false : value))
+  @ApiPropertyOptional({ type: 'boolean', example: '' })
+  is_robot: boolean;
+
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value, 10))
+  @IsInt()
+  @IsPositive()
+  @ApiPropertyOptional({ type: 'number', example: '' })
+  robot_start_time: number;
 }
+
+export class UpdateSellerDto extends PartialType(CreateSellerDto) {}

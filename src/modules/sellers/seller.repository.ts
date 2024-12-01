@@ -14,7 +14,7 @@ export class SellersRepository extends Repository<Seller> {
     const seller = this.create({ ...createSellerDto, user });
 
     try {
-      await this.save(seller);
+      return await this.save(seller);
     } catch (error) {
       throw new InternalServerErrorException();
     }

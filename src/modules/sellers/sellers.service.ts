@@ -1,15 +1,24 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateSellerDto } from './dto/create-seller.dto';
-import { UpdateSellerDto } from './dto/update-seller.dto';
+import { CreateSellerDto, UpdateSellerDto } from './dto/create-seller.dto';
 import { SellersRepository } from './seller.repository';
 import { User } from '../users/entities/user.entity';
 import { SellersMessage } from 'src/common/enums/messages.enum';
+import { Seller } from './entities/seller.entity';
+import { RobotJob } from '../robot/cron/robot.job';
 
 @Injectable()
 export class SellerService {
-  constructor(private sellersRepository: SellersRepository) {}
+  constructor(
+    private sellersRepository: SellersRepository,
+    private robotJob: RobotJob,
+  ) {}
   async create(createSellerDto: CreateSellerDto, user: User) {
-    await this.sellersRepository.createSeller(createSellerDto, user);
+    const seller = await this.sellersRepository.createSeller(createSellerDto, user);
+
+    if (createSellerDto.robot_start_time !== undefined || createSellerDto.is_robot !== undefined) {
+      await this.robotJob.resetCronJobs();
+      console.log(`Cron job for seller ${seller.id} has been set.`);
+    }
 
     return {
       message: SellersMessage.CreatedSellerSuccess,
@@ -34,11 +43,15 @@ export class SellerService {
       throw new NotFoundException(`فروشنده با شناسه ${id} یافت نشد`);
     }
 
-    // if (seller.user !== user) {
+    // if (seller.user.id !== user.id) {
     //   throw new ForbiddenException('شما اجازه به‌روزرسانی این فروشنده را ندارید');
     // }
 
     await this.sellersRepository.update(id, updateSellerDto);
+
+    if (updateSellerDto.robot_start_time !== undefined || updateSellerDto.is_robot !== undefined) {
+      await this.robotJob.resetCronJobs();
+    }
 
     return {
       message: SellersMessage.UpdatedSellerSuccess,
@@ -52,5 +65,17 @@ export class SellerService {
     return {
       message: SellersMessage.RemoveSellerSuccess,
     };
+  }
+
+  async getSellersWithRobots() {
+    return this.sellersRepository.find({
+      where: { is_robot: true },
+    });
+  }
+
+  async getSellerById(sellerId: number): Promise<Seller> {
+    return this.sellersRepository.findOne({
+      where: { seller_id: sellerId },
+    });
   }
 }

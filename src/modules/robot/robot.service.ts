@@ -1,20 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { DigikalaService } from '../http/DigiKala/digikala.service';
+import { Seller } from '../sellers/entities/seller.entity';
+import { SellerService } from '../sellers/sellers.service';
 
 @Injectable()
 export class RobotService {
-  constructor(private readonly httpService: DigikalaService) {}
+  constructor(
+    private readonly digiKalaService: DigikalaService,
+    @Inject(forwardRef(() => SellerService)) private readonly sellerService: SellerService,
+  ) {}
 
-  async fetchAndProcessData(): Promise<void> {
-    try {
-      const data = await this.httpService.getVariants(
-        `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzM4NCJ9.eyJ0b2tlbl9pZCI6MTA4NjgsInBheWxvYWQiOm51bGx9.gZAiguu0btiWXBobziPizvqDlklVxraKom6EG3I1fnvO99wYb0cECSaMiQb2hf_n`,
-      );
-
-      return data;
-      // TODO: اعمال تغییرات لازم
-    } catch (error) {
-      console.error('Error processing data:', error.message);
-    }
+  async runRobot(seller: Seller): Promise<void> {
+    const varinats = await this.digiKalaService.getVariants(seller.api_key, {
+      'search[is_buy_box_winner]': 0,
+      size: 100,
+    });
+    console.log(varinats);
   }
 }
