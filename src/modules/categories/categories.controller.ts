@@ -18,6 +18,8 @@ export class CategoriesController {
 
   @Get()
   findAll() {
+    console.log(`get all categories ${Date.now().toLocaleString('fa-ir')}`);
+
     return this.CategoriesService.findAll();
   }
 

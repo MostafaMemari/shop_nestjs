@@ -75,6 +75,7 @@ export class ProductsController {
   @Pagination()
   @FilterProduct()
   findAll(@GetUser() user: User, @Query() paginationDto: PaginationDto, @Query() filterDto: FilterProductDto) {
+    console.log(`get all product` + new Date().toLocaleTimeString('fa-IR'));
     return this.productsService.findAll(user, filterDto, paginationDto);
   }
 
@@ -95,7 +96,7 @@ export class ProductsController {
     @Query() filterDto: FilterProductDto,
     @Param('type') type: TransactionType,
   ) {
-    console.log(new Date().toLocaleTimeString('fa-IR'));
+    console.log(`get product type` + new Date().toLocaleTimeString('fa-IR'));
     return this.productsService.findAllByTransactionType(user, type, filterDto, paginationDto);
   }
 

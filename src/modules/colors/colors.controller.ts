@@ -18,6 +18,7 @@ export class ColorsController {
 
   @Get()
   findAll() {
+    console.log(`get all colors ${Date.now().toLocaleString('fa-ir')}`);
     return this.colorsService.findAll();
   }
 

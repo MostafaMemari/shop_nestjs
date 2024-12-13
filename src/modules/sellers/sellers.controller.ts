@@ -22,6 +22,8 @@ export class SellersController {
 
   @Get()
   findAll(@GetUser() user: User) {
+    console.log(`get all sellers ${Date.now().toLocaleString('fa-ir')}`);
+
     return this.SellerService.findAll(user);
   }
 
