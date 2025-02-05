@@ -130,7 +130,7 @@ export class ProductRepository extends Repository<Product> {
       .leftJoin('products.seller', 'seller')
       .leftJoinAndSelect('products.product_settings', 'product_settings')
       .where('seller.userId = :userId', { userId: user.id })
-      .andWhere('is_robot = :isRobot', { isRobot: true });
+      .andWhere('products.is_robot = :isRobot', { isRobot: true });
 
     if (search) query.andWhere('products.name LIKE :search', { search: `%${search}%` });
 
