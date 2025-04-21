@@ -8,7 +8,6 @@ import * as sharp from 'sharp';
 import axios from 'axios';
 @Injectable()
 export class AwsService {
-  //@ts-ignore
   constructor(@InjectAwsService(S3) private readonly s3: S3) {}
 
   async uploadFile(file: Express.Multer.File, folderName: string): Promise<S3.ManagedUpload.SendData> {
@@ -21,8 +20,8 @@ export class AwsService {
       .upload({
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: `${folderName}/${Date.now()}${ext}`,
-        // Body: file.buffer,
         Body: processedImage,
+        // Body: file.buffer,
         ContentType: contentType,
       })
       .promise();

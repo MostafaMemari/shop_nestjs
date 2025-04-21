@@ -17,9 +17,9 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ProductType } from '../enum/productType.enum';
-import { ParseJsonPipe } from 'src/common/pipes/parse-Json .pipe';
 import { RelatedProductDto } from './related-product.dto';
 import { IsRequiredIfTypeNotSingle } from 'src/common/decorators/requiredIfTypeNotSingle.decorator';
+// import { ParseJsonPipe } from '../../../common/pipes/parse-json .pipe';
 
 export class CreateProductDto {
   @IsString()
@@ -117,10 +117,10 @@ export class CreateProductDto {
   @ValidateNested({ each: true })
   @Type(() => RelatedProductDto)
   @ApiPropertyOptional({ type: RelatedProductDto, isArray: true })
-  @Transform(({ value }) => {
-    const parsedValue = new ParseJsonPipe().transform(value);
-    return plainToClass(RelatedProductDto, parsedValue);
-  })
+  // @Transform(({ value }) => {
+  //   const parsedValue = new ParseJsonPipe().transform(value);
+  //   return plainToClass(RelatedProductDto, parsedValue);
+  // })
   @IsRequiredIfTypeNotSingle({ message: 'relatedProducts is required when type is not SINGLE' })
   relatedProducts?: RelatedProductDto[];
 }

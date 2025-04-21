@@ -4,8 +4,6 @@ import { RobotService } from './robot.service';
 import { RobotJob } from './cron/robot.job';
 import { SellersModule } from '../sellers/sellers.module';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { SellerService } from '../sellers/sellers.service';
-import { SellersRepository } from '../sellers/seller.repository';
 import { RobotController } from './robot.controller';
 import { ProductsModule } from '../products/products.module';
 
