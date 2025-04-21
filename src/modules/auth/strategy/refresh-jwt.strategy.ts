@@ -28,6 +28,8 @@ export class RefreshJwtStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
       })) ?? null;
 
     if (!user || !user.hashedRefreshToken) throw new UnauthorizedException();
+    // req.user = user;
+
     return user;
   }
 }
