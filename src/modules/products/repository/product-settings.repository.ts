@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { ProductSettings } from '../entities/settings-product.entity';
-import { productSettingsDto } from '../dto/settings-product.dto';
+import { ProductSettingsDto } from '../dto/settings-product.dto';
 import { Product } from '../entities/product.entity';
 
 @Injectable()
@@ -10,7 +10,7 @@ export class ProductSettingsRepository extends Repository<ProductSettings> {
     super(ProductSettings, dataSource.createEntityManager());
   }
 
-  async createAndUpdateProductSettings(id: number, product: Product, productSettingsDto: productSettingsDto) {
+  async createAndUpdateProductSettings(id: number, product: Product, productSettingsDto: ProductSettingsDto) {
     try {
       if (product.product_settings) {
         this.merge(product.product_settings, productSettingsDto);

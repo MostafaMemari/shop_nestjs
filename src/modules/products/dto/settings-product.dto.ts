@@ -2,7 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsInt, IsOptional, IsPositive } from 'class-validator';
 
-export class productSettingsDto {
+export class ProductSettingsDto {
   @IsOptional()
   @Transform(({ value }) => parseInt(value, 10))
   @IsInt()

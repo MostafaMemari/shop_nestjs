@@ -7,11 +7,19 @@ import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { jwtConfigAsync } from 'src/config/jwt.config';
 import { UsersRepository } from '../users/users.repository';
+import { RefreshJwtStrategy } from './strategy/refresh-jwt.strategy';
+import { ConfigModule } from '@nestjs/config';
+import refreshJwtConfig from 'src/config/refresh-jwt.config';
 
 @Module({
-  imports: [UsersModule, PassportModule.register({ defaultStrategy: 'jwt' }), JwtModule.registerAsync(jwtConfigAsync)],
+  imports: [
+    UsersModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.registerAsync(jwtConfigAsync),
+    ConfigModule.forFeature(refreshJwtConfig),
+  ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, UsersRepository],
+  providers: [AuthService, JwtStrategy, RefreshJwtStrategy, UsersRepository],
   exports: [AuthService],
 })
 export class AuthModule {}

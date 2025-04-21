@@ -22,7 +22,7 @@ import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 import { SwaggerConsumes } from 'src/common/enums/swagger-consumes.enum';
 import { ValidateIdsPipe } from './pipe/validate-ids.pipe';
 import { AuthDecorator } from 'src/common/decorators/auth.decorator';
-import { productSettingsDto } from './dto/settings-product.dto';
+import { ProductSettingsDto } from './dto/settings-product.dto';
 import { ApiConsumes, ApiParam, ApiTags } from '@nestjs/swagger';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { User } from '../users/entities/user.entity';
@@ -65,7 +65,7 @@ export class ProductsController {
   @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
   createAndUpdateProductSettings(
     @Param('id', ParseIntPipe) id: string,
-    @Body() productSettingsDto: productSettingsDto,
+    @Body() productSettingsDto: ProductSettingsDto,
     @GetUser() user: User,
   ) {
     return this.productsService.createAndUpdateProductSettings(+id, productSettingsDto, user);

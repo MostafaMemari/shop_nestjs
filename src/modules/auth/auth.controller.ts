@@ -7,9 +7,10 @@ import { SwaggerConsumes } from 'src/common/enums/swagger-consumes.enum';
 import { RegisterDto } from './dto/register.dto';
 import { AuthDecorator } from 'src/common/decorators/auth.decorator';
 import { Request } from 'express';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('auth')
-@ApiTags('Authorisation')
+@ApiTags('Authorization')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -24,6 +25,12 @@ export class AuthController {
   @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
   async register(@Body() registerDto: RegisterDto): Promise<{ accessToken: string }> {
     return this.authService.register(registerDto);
+  }
+
+  @Post('refresh')
+  @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
+  async refresh(@Body() refreshTokenDto: RefreshTokenDto): Promise<{ accessToken: string; refreshToken: string }> {
+    return this.authService.refreshToken(refreshTokenDto);
   }
 
   @AuthDecorator()

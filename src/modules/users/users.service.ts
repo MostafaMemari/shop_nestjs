@@ -41,4 +41,12 @@ export class UsersService {
 
     return this.usersRepository.save(user);
   }
+
+  async updateRefreshToken(userId: number, hashedRefreshToken: string | null): Promise<void> {
+    await this.usersRepository.update({ id: userId }, { hashedRefreshToken });
+  }
+
+  async findOneById(id: number): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { id } });
+  }
 }

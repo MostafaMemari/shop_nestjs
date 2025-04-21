@@ -3,14 +3,14 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
-import { User } from 'src/modules/users/entities/user.entity';
-import { UsersRepository } from 'src/modules/users/users.repository';
+import { AuthService } from '../auth.service';
+import { CurrentUser } from '../types/current-user';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
-    private usersRepository: UsersRepository,
-    private configService: ConfigService,
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -19,10 +19,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: JwtPayload): Promise<User> {
-    const { id } = payload;
-    const user: User | null =
-      (await this.usersRepository.findOne({ where: { id }, select: { id: true, username: true, role: true } })) ?? null;
+  async validate(payload: JwtPayload): Promise<CurrentUser> {
+    console.log(payload);
+    const { sub: id } = payload;
+
+    const user: CurrentUser | null = await this.authService.validateUserById(id);
 
     if (!user) throw new UnauthorizedException();
     // req.user = user

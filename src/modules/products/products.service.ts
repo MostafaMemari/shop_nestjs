@@ -1,14 +1,8 @@
-import {
-  BadRequestException,
-  ConsoleLogger,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 import { ProductsMessage } from 'src/common/enums/messages.enum';
 import { User } from '../users/entities/user.entity';
-import { productSettingsDto } from './dto/settings-product.dto';
+import { ProductSettingsDto } from './dto/settings-product.dto';
 import { ProductSettingsRepository } from './repository/product-settings.repository';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { SellerService } from '../sellers/sellers.service';
@@ -28,7 +22,7 @@ import { FilterProductDto } from './dto/filter-product.dto';
 export class ProductsService {
   constructor(
     private readonly productRepository: ProductRepository,
-    private readonly ProductSettingsRepository: ProductSettingsRepository,
+    private readonly productSettingsRepository: ProductSettingsRepository,
     private readonly sellerService: SellerService,
     private readonly awsService: AwsService,
 
@@ -73,10 +67,10 @@ export class ProductsService {
     }
   }
 
-  async createAndUpdateProductSettings(id: number, productSettingsDto: productSettingsDto, user: User) {
+  async createAndUpdateProductSettings(id: number, productSettingsDto: ProductSettingsDto, user: User) {
     const product = await this.findOneByIdAndRelationSetting(id, user);
     const isCreated = !product.product_settings;
-    await this.ProductSettingsRepository.createAndUpdateProductSettings(id, product, productSettingsDto);
+    await this.productSettingsRepository.createAndUpdateProductSettings(id, product, productSettingsDto);
 
     return {
       message: isCreated ? ProductsMessage.CreateProductSettingsSuccess : ProductsMessage.UpdateProductSettingsSuccess,
